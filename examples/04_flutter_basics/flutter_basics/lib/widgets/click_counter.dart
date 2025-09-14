@@ -16,7 +16,7 @@ class _ClicksCounterState extends State<ClicksCounter> {
       onPressed: () {
         setState(() {
           _counter++;
-        }); 
+        });
         //_counter++;
         print(_counter);
       },
@@ -41,7 +41,7 @@ class _ClicksCounterState extends State<ClicksCounter> {
   // and current widget properties
   // might not be called during hot reload
   @override
-  void didUpdateWidget(covariant ClicksCounter oldWidget) {
+  void didUpdateWidget(ClicksCounter oldWidget) {
     super.didUpdateWidget(oldWidget);
     print('didUpdateWidget, mounted: $mounted');
   }
