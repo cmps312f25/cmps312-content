@@ -1,6 +1,6 @@
 // Interface: defines the contract
-abstract class Rotatable {
-  void rotate();
+ abstract class Rotatable {
+   void rotate();
 }
 
 // Earth implements rotation in its own way

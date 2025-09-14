@@ -1,7 +1,15 @@
 bool isEven(int n) => n % 2 == 0;
 void main() {
   // Range (1 to 10 inclusive)
-  List<int> nums = List.generate(10, (i) => i + 1);
+  List<int> nums = [10, 15, 30, 50]; //List.generate(10, (i) => i + 1);
+
+  for(final num in nums) {
+    print(num);
+  }
+
+  nums.forEach((n) => print(n));
+  nums.where((n) => n % 2 == 0).map((n) => n + 5).forEach(print);
+
 
   // Version 1
   bool hasEvenNumber = nums.any((n) => n.isEven);

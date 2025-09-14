@@ -5,7 +5,13 @@ extension StringExtensions on String {
       length == 8; //&& allMatches(RegExp(r'\d')).length == length;
 }
 
-class QuMember {
+class QuMember  {
+  static const String university = 'Qatar University';
+  static const String city = 'Doha';
+  static const String country = 'Qatar';
+
+  static int getCurrentYear() => DateTime.now().year;
+
   String firstName;
   final String lastName;
   final DateTime dob;

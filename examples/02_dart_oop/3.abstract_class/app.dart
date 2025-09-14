@@ -3,6 +3,9 @@ import 'Rectangle.dart';
 
 void main() {
 
+  var cicrles = []
+  var rectangles = []
+  
 
   var shapes = [
     Circle(5),

@@ -17,9 +17,5 @@ class Student extends QuMember {
   @override
   String toString() => '${super.toString()}. GPA: $gpa';
 
-  static const String university = 'Qatar University';
-  static const String city = 'Doha';
-  static const String country = 'Qatar';
 
-  static int getCurrentYear() => DateTime.now().year;
 }

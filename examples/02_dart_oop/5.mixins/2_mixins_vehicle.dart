@@ -8,13 +8,15 @@ class Vehicle {
 
 // Mixin for Electric Vehicles, requires access to `name` property from Vehicle
 mixin ElectricVehicle on Vehicle {
+  int fuelLevel = 100;
   int batteryLevel = 100;
 
   void chargeBattery() => print("$name is charging its battery...");
-  
+
   void driveOnElectric() {
     if (batteryLevel > 0) {
-      print("$name is driving on electric power. Battery level: $batteryLevel%");
+      print(
+          "$name is driving on electric power. Battery level: $batteryLevel%");
     } else {
       print("$name cannot drive, battery is empty!");
     }
@@ -26,7 +28,7 @@ mixin CombustionVehicle on Vehicle {
   int fuelLevel = 100;
 
   void refuel() => print("$name is refueling...");
-  
+
   void driveOnFuel() {
     if (fuelLevel > 0) {
       print("$name is driving on fuel. Fuel level: $fuelLevel%");
@@ -61,7 +63,7 @@ class HybridCar extends Vehicle with ElectricVehicle, CombustionVehicle {
   }
 
   void display() => print("I am a Hybrid Car named $name.");
-  
+
   // Method to manage both battery and fuel usage
   void driveHybrid() {
     if (batteryLevel > 0) {
@@ -75,6 +77,7 @@ class HybridCar extends Vehicle with ElectricVehicle, CombustionVehicle {
 }
 
 void main() {
+  var myCar = ElectricVehicle();
   // Electric Car example
   var electricCar = ElectricCar("Tesla Model 3");
   electricCar.display();
