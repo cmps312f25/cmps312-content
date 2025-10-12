@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:state_management/router.dart';
+import 'package:state_management/app/router.dart';
 
 void main() {
   runApp(const App());
@@ -15,6 +15,7 @@ class App extends StatelessWidget {
       child: MaterialApp.router(
         title: 'State Management Demo',
         theme: ThemeData(primarySwatch: Colors.blue),
+        debugShowCheckedModeBanner: false,
         routerConfig: router,
       ),
     );
