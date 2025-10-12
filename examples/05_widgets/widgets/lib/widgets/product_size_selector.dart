@@ -6,7 +6,7 @@ class ProductSizeSelector extends StatelessWidget {
   final ValueChanged<Set<ProductSize>> onSelectionChanged;
 
   // Constructor to accept selectedSizes and onSelected callback
-  const ProductSizeSelector({
+  const ProductSizeSelector({super.key, 
     required this.selectedSizes,
     required this.onSelectionChanged,
   });

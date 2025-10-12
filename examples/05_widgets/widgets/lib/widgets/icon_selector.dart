@@ -4,7 +4,7 @@ import 'package:widgets/models/icon_label.dart';
 class IconSelector extends StatelessWidget {
   final ValueChanged<IconLabel?> onSelected;
 
-  const IconSelector({
+  const IconSelector({super.key, 
     required this.onSelected,
   });
 

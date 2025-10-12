@@ -11,13 +11,10 @@ class _SwitchScreenState extends State<SwitchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: isDarkMode ? ThemeData.dark() : ThemeData.light(),
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Switch Demo'),
-          centerTitle: true,
-        ),
+    return Theme(
+      data: isDarkMode ? ThemeData.dark() : ThemeData.light(),
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Switch Demo'), centerTitle: true),
         body: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -25,9 +22,7 @@ class _SwitchScreenState extends State<SwitchScreen> {
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 'Turn on dark theme',
-                style: TextStyle(
-                  color: Theme.of(context).primaryColor,
-                ),
+                style: TextStyle(color: Theme.of(context).primaryColor),
               ),
             ),
             Padding(

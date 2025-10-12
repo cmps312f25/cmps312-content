@@ -3,13 +3,13 @@ import 'dart:io';
 import 'Surah.dart';
 
 class SurahRepository {
-  late final List<Surah> surahs;
+   late final List<Surah> surahs;
 
   SurahRepository() {
     final filePath = 'data/surahs.json';
     final jsonData = File(filePath).readAsStringSync();
-    final List<dynamic> jsonList = jsonDecode(jsonData);
-    surahs = jsonList.map((json) => Surah.fromJson(json)).toList();
+    final List<dynamic> listSurahMap = jsonDecode(jsonData);
+    surahs = listSurahMap.map((surahMap) => Surah.fromJson(surahMap)).toList();
   }
 
   int get totalAyat => surahs.fold(0, (sum, surah) => sum + surah.ayaCount);

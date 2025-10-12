@@ -5,7 +5,7 @@ class CheckBoxList extends StatelessWidget {
   final Map<String, bool> options;
   final Function(String, bool) onChanged;
 
-  const CheckBoxList({
+  const CheckBoxList({super.key, 
     required this.title,
     required this.options,
     required this.onChanged,

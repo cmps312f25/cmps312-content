@@ -6,7 +6,7 @@ import 'package:flutter_basics/widgets/hello_world.dart';
 import 'package:flutter_basics/screens/welcome_screen.dart';
 
 void main() {
-  //runApp(const Greeting(name: "CMPS 312 Team"));
+  //runApp(const Greeting(name: "CMPS 312 Students"));
   //runApp(const FlutterLogoScreen());
   runApp(const MainApp());
   //runApp(const WelcomeScreen());
@@ -18,8 +18,20 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       home: Scaffold(
+        appBar: AppBar(title: const Text('Flutter Basics')),
+        bottomNavigationBar: const BottomAppBar(
+          color: Colors.blue,
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text(
+              'CMPS 312 - Flutter Basics',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
         body: Center(
           //child: WelcomeScreen(),
           child: ClicksCounter(),

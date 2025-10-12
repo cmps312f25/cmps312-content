@@ -5,7 +5,7 @@ class WeatherSelector extends StatelessWidget {
   final Weather selectedWeather;
   final ValueChanged<Weather> onSelectionChanged;
 
-  const WeatherSelector({
+  const WeatherSelector({super.key, 
     required this.selectedWeather,
     required this.onSelectionChanged,
   });

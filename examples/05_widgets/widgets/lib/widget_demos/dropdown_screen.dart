@@ -6,7 +6,7 @@ import 'package:widgets/widgets/country_selector.dart';
 import 'package:widgets/widgets/icon_selector.dart';
 
 class DropdownMenuScreen extends StatefulWidget {
-  const DropdownMenuScreen();
+  const DropdownMenuScreen({super.key});
 
   @override
   State<DropdownMenuScreen> createState() => _DropdownMenuScreenState();

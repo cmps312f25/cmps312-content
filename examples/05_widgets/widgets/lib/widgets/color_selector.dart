@@ -5,7 +5,7 @@ class ColorSelector extends StatelessWidget {
   final ColorLabel initialColor;
   final ValueChanged<ColorLabel?> onSelected;
 
-  const ColorSelector({
+  const ColorSelector({super.key, 
     this.initialColor = ColorLabel.green,
     required this.onSelected,
   });

@@ -5,7 +5,7 @@ class ColorSlider extends StatelessWidget {
   final double colorValue;
   final ValueChanged<double> onValueChange;
 
-  const ColorSlider({
+  const ColorSlider({super.key, 
     required this.colorName,
     required this.colorValue,
     required this.onValueChange

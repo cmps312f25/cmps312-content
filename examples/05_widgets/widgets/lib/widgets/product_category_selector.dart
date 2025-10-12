@@ -7,7 +7,7 @@ class ProductCategorySelector extends StatelessWidget {
   final ValueChanged<ProductCategory> onSelectionChanged;
 
   // Constructor to accept selectedCategory and onSelected callback
-  const ProductCategorySelector({
+  const ProductCategorySelector({super.key, 
     required this.initialCategory,
     required this.onSelectionChanged,
   });

@@ -14,9 +14,9 @@ class _ClicksCounterState extends State<ClicksCounter> {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        setState(() {
+        //setState(() {
           _counter++;
-        });
+        //});
         //_counter++;
         print(_counter);
       },

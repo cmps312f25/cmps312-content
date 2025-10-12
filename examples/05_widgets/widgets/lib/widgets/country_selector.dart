@@ -4,7 +4,7 @@ class CountrySelector extends StatelessWidget {
   final String initialValue;
   final ValueChanged<String> onSelected;
 
-  CountrySelector({required this.initialValue, required this.onSelected});
+  CountrySelector({super.key, required this.initialValue, required this.onSelected});
 
   final List<String> countries = [
     "Australia",

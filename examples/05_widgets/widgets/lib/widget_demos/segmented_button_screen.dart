@@ -7,7 +7,7 @@ import 'package:widgets/widgets/product_size_selector.dart';
 import 'package:widgets/widgets/weather_selector.dart';
 
 class SegmentedButtonScreen extends StatefulWidget {
-  const SegmentedButtonScreen();
+  const SegmentedButtonScreen({super.key});
   @override
   _SegmentedButtonScreenState createState() => _SegmentedButtonScreenState();
 }

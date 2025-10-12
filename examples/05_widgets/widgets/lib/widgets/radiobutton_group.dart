@@ -7,7 +7,7 @@ class RadioButtonGroup extends StatelessWidget {
   final Function(int) onOptionSelected;
   final Color cardBackgroundColor;
 
-  const RadioButtonGroup({
+  const RadioButtonGroup({super.key, 
     required this.title,
     required this.options,
     required this.selectedOptionIndex,

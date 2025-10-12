@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class TipCalculator extends StatefulWidget {
-  const TipCalculator();
+  const TipCalculator({super.key});
   @override
   _TipCalculatorState createState() => _TipCalculatorState();
 }
