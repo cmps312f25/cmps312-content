@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:navigation/models/fruit.dart';
+import 'package:navigation/features/fruits/models/fruit.dart';
 
 class FruitListTile extends StatelessWidget {
   final Fruit fruit;
@@ -16,9 +16,7 @@ class FruitListTile extends StatelessWidget {
     return ListTile(
       leading: ClipRRect(
         borderRadius: BorderRadius.circular(10),
-        child: Image(
-          image: AssetImage(fruit.imageUrl),
-        ),
+        child: Image.asset(fruit.imageUrl),
       ),
       title: Text(
         fruit.name,

@@ -9,7 +9,5 @@ class Fruit {
     required this.imageUrl,
     required this.title,
     required this.description,
-  });
-
-  
+  }); 
 }
