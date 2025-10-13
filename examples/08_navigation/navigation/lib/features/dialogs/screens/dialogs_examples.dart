@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:navigation/core/widgets/nav_drawer.dart';
 import 'package:navigation/features/dialogs/widgets/basic_dialog.dart';
 import 'package:navigation/features/dialogs/widgets/fullscreen_dialog.dart';
 import 'package:navigation/features/dialogs/widgets/list_dialog.dart';
@@ -26,6 +27,7 @@ class DialogsScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Material 3 Dialogs'),
       ),
+      drawer: const NavDrawer(),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

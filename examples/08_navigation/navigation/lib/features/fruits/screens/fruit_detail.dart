@@ -18,7 +18,7 @@ class FruitDetailScreen extends StatelessWidget {
           Expanded(
             child: Image.asset(
               fruit.imageUrl,
-              fit: BoxFit.cover,
+              fit: BoxFit.scaleDown,
               width: double.infinity,
             ),
           ),
