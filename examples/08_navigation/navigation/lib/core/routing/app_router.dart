@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:navigation/core/widgets/nav_bottom_bar.dart';
 import 'package:navigation/features/dialogs/screens/dialogs_examples.dart';
+import 'package:navigation/features/dialogs/widgets/fullscreen_dialog.dart';
 import 'package:navigation/features/fruits/models/fruit.dart';
 import 'package:navigation/features/fruits/screens/fruit_detail.dart';
 import 'package:navigation/features/fruits/screens/fruits_list.dart';
@@ -17,6 +18,7 @@ class AppRoutes {
   static const dialogs = '/dialogs';
   static const settings = '/settings';
   static const fruitDetails = '/fruitDetails';
+  static const fullscreenDialog = '/fullscreenDialog';
 
   // Bottom navigation routes (Home, Fruits, and Dialogs)
   static const bottomNavRoutes = [home, fruits, dialogs];
@@ -74,6 +76,11 @@ final appRouter = GoRouter(
         final fruit = state.extra as Fruit;
         return FruitDetailScreen(fruit: fruit);
       },
+    ),
+    // Fullscreen dialog route
+    GoRoute(
+      path: AppRoutes.fullscreenDialog,
+      builder: (context, state) => const FullScreenDialog(),
     ),
   ],
 );
