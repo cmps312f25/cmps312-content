@@ -21,7 +21,7 @@ class StandardBottomSheet extends StatelessWidget {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withAlpha(25), // 0.1 opacity ≈ 25 alpha
             blurRadius: 10,
             spreadRadius: 2,
           ),

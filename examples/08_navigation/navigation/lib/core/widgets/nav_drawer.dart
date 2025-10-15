@@ -2,14 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:navigation/core/routing/app_router.dart';
 
+/// Navigation drawer for secondary navigation (Profile, Settings)
+/// Follows Material 3 design guidelines for drawer navigation
 class NavDrawer extends StatelessWidget {
   const NavDrawer({super.key});
 
-  // Navigation items configuration (only Profile and Settings)
+  // Navigation items - Profile and Settings only
+  // Using private data class for type safety and clarity
   static const _navItems = [
     _NavItem(icon: Icons.person, label: 'Profile', route: AppRoutes.profile),
     _NavItem(
-        icon: Icons.settings, label: 'Settings', route: AppRoutes.settings),
+      icon: Icons.settings,
+      label: 'Settings',
+      route: AppRoutes.settings,
+    ),
   ];
 
   @override
@@ -21,13 +27,15 @@ class NavDrawer extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: [
           _buildHeader(),
-          ..._navItems
-              .map((item) => _buildNavTile(context, item, currentLocation)),
+          ..._navItems.map(
+            (item) => _buildNavTile(context, item, currentLocation),
+          ),
         ],
       ),
     );
   }
 
+  /// Builds drawer header with app branding
   Widget _buildHeader() {
     return const DrawerHeader(
       decoration: BoxDecoration(color: Colors.blue),
@@ -50,8 +58,12 @@ class NavDrawer extends StatelessWidget {
     );
   }
 
+  /// Builds individual navigation tile with selection state
   Widget _buildNavTile(
-      BuildContext context, _NavItem item, String currentLocation) {
+    BuildContext context,
+    _NavItem item,
+    String currentLocation,
+  ) {
     final isSelected = currentLocation == item.route;
 
     return ListTile(
@@ -59,7 +71,9 @@ class NavDrawer extends StatelessWidget {
       title: Text(item.label),
       selected: isSelected,
       onTap: () {
+        // Close drawer first
         context.pop();
+        // Navigate only if not already on this route
         if (!isSelected) {
           context.push(item.route);
         }
@@ -68,7 +82,8 @@ class NavDrawer extends StatelessWidget {
   }
 }
 
-// Data class for navigation items
+/// Private data class for navigation items
+/// Encapsulates icon, label, and route information
 class _NavItem {
   final IconData icon;
   final String label;

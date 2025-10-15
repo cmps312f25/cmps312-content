@@ -10,25 +10,36 @@ import 'package:navigation/features/home/screens/home_screen.dart';
 import 'package:navigation/features/profile/screens/profile_screen.dart';
 import 'package:navigation/features/settings/screens/settings_screen.dart';
 
-// Route names as constants to avoid hardcoded strings
+/// Route path constants
+/// Centralized route definitions prevent typos and improve maintainability
 class AppRoutes {
+  // Private constructor prevents instantiation
+  AppRoutes._();
+
+  // Bottom navigation routes
   static const home = '/';
-  static const profile = '/profile';
   static const fruits = '/fruits';
   static const dialogs = '/dialogs';
+
+  // Drawer navigation routes
+  static const profile = '/profile';
   static const settings = '/settings';
+
+  // Detail/Dialog routes
   static const fruitDetails = '/fruitDetails';
   static const fullscreenDialog = '/fullscreenDialog';
 
-  // Bottom navigation routes (Home, Fruits, and Dialogs)
+  /// Routes that display bottom navigation bar
   static const bottomNavRoutes = [home, fruits, dialogs];
 }
 
-// GoRouter configuration
+/// Global GoRouter configuration
+/// Defines app navigation structure using declarative routing
 final appRouter = GoRouter(
   initialLocation: AppRoutes.home,
   routes: [
-    // ShellRoute provides persistent bottom navigation bar for Home, Fruits, and Dialogs
+    // ShellRoute provides persistent bottom navigation for main screens
+    // Keeps bottom bar visible while navigating between Home, Fruits, Dialogs
     ShellRoute(
       builder: (context, state, child) {
         final currentLocation = state.uri.toString();
@@ -36,7 +47,7 @@ final appRouter = GoRouter(
             AppRoutes.bottomNavRoutes.indexOf(currentLocation);
 
         return Scaffold(
-          body: child,
+          body: child, // Current screen content
           bottomNavigationBar: BottomNavBar(
             selectedIndex: selectedIndex >= 0 ? selectedIndex : 0,
             onTapNavItem: (index) =>
@@ -59,8 +70,9 @@ final appRouter = GoRouter(
         ),
       ],
     ),
-    // Profile and Settings are outside ShellRoute (no bottom nav)
-    // Accessible only from drawer
+
+    // Routes outside ShellRoute - no bottom navigation bar
+    // Profile and Settings accessible only from drawer
     GoRoute(
       path: AppRoutes.profile,
       builder: (context, state) => const ProfileScreen(),
@@ -69,7 +81,8 @@ final appRouter = GoRouter(
       path: AppRoutes.settings,
       builder: (context, state) => const SettingsScreen(),
     ),
-    // Detail screen without bottom nav
+
+    // Detail screen - receives Fruit object via extra parameter
     GoRoute(
       path: AppRoutes.fruitDetails,
       builder: (context, state) {
@@ -77,7 +90,8 @@ final appRouter = GoRouter(
         return FruitDetailScreen(fruit: fruit);
       },
     ),
-    // Fullscreen dialog route
+
+    // Fullscreen dialog example
     GoRoute(
       path: AppRoutes.fullscreenDialog,
       builder: (context, state) => const FullScreenDialog(),

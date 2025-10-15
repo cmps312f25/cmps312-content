@@ -1,46 +1,51 @@
 import 'package:navigation/features/fruits/models/fruit.dart';
 
+/// Repository for fruit data
+/// Uses static methods pattern - suitable for demo/mock data
+/// In production, consider using dependency injection for testability
 class FruitRepository {
-  // Private constructor to prevent instantiation
+  // Private constructor prevents instantiation
   FruitRepository._();
 
+  /// Returns list of sample fruits with nutritional information
+  /// In production, this would fetch from API or local database
   static List<Fruit> getFruits() => [
-        Fruit(
+        const Fruit(
           name: 'Apple',
           imageUrl: 'assets/images/apple.jpg',
           title: 'High in fiber and antioxidants',
           description:
               'Apples are highly nutritious fruits that offer a variety of health benefits. They are a good source of fiber and vitamin C. Regular consumption can help improve heart health, reduce the risk of diabetes, and aid in weight loss.',
         ),
-        Fruit(
+        const Fruit(
           name: 'Banana',
           imageUrl: 'assets/images/banana.jpg',
           title: 'Rich in potassium and energy',
           description:
               'Bananas are versatile fruits known for their high potassium content which is essential for maintaining healthy blood pressure and heart function. They provide energy boosts and help regulate blood sugar levels.',
         ),
-        Fruit(
+        const Fruit(
           name: 'Orange',
           imageUrl: 'assets/images/orange.jpg',
           title: 'Loaded with vitamin C',
           description:
               'Oranges are popular citrus fruits loaded with vitamin C, which is vital for immune function. Consuming oranges can help reduce the risk of chronic conditions such as heart disease, enhance iron absorption, and support healthy skin.',
         ),
-        Fruit(
+        const Fruit(
           name: 'Strawberry',
           imageUrl: 'assets/images/strawberry.jpg',
           title: 'Full of vitamins and antioxidants',
           description:
               'Strawberries are rich in vitamin C, manganese, folate, and potassium. This fruit is famous for its bright red color, juicy texture, and sweetness. Strawberries help combat oxidative stress and can potentially support heart health.',
         ),
-        Fruit(
+        const Fruit(
           name: 'Watermelon',
           imageUrl: 'assets/images/watermelon.jpg',
           title: 'Hydrating and refreshing',
           description:
               'Watermelons are large, refreshing fruits mostly comprised of water, which makes them exceptionally hydrating. They are a good source of vitamins C and A. Watermelon intake can help relieve muscle soreness and is excellent for hydration on hot days.',
         ),
-        Fruit(
+        const Fruit(
           name: 'Grape',
           imageUrl: 'assets/images/grape.jpg',
           title: 'Good source of vitamins and minerals',
