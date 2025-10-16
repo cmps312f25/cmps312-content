@@ -70,11 +70,13 @@ class DialogsSheetsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isSmallScreen = MediaQuery.of(context).size.width < 600;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dialogs & Sheets'),
       ),
-      drawer: const NavDrawer(),
+      drawer: isSmallScreen ? const NavDrawer() : null,
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),

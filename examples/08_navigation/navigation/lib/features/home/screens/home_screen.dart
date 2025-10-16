@@ -10,11 +10,14 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Each screen provides its own Scaffold, AppBar, and Drawer
     // ShellRoute (in app_router.dart) only provides the bottom navigation bar
+    // Drawer only shown on small screens (< 600dp)
+    final isSmallScreen = MediaQuery.of(context).size.width < 600;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
       ),
-      drawer: const NavDrawer(),
+      drawer: isSmallScreen ? const NavDrawer() : null,
       body: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:navigation/core/models/nav_item.dart';
 
 /// Bottom navigation bar widget for primary app navigation
 /// Displays Home, Fruits, and Dialogs tabs with icons and labels
-/// Uses composition pattern - receives state and callbacks from parent
 class BottomNavBar extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onTapNavItem;
@@ -13,12 +13,10 @@ class BottomNavBar extends StatelessWidget {
     required this.onTapNavItem,
   });
 
-  // Navigation items configuration - using records for type safety
-  // Records (tuples) are immutable and perfect for configuration data
   static const _navItems = [
-    (icon: Icons.home, label: 'Home'),
-    (icon: Icons.local_grocery_store, label: 'Fruits'),
-    (icon: Icons.chat_bubble_outline, label: 'Dialogs & Sheets'),
+    NavItem(icon: Icons.home, label: 'Home'),
+    NavItem(icon: Icons.local_grocery_store, label: 'Fruits'),
+    NavItem(icon: Icons.chat_bubble_outline, label: 'Dialogs & Sheets'),
   ];
 
   @override
