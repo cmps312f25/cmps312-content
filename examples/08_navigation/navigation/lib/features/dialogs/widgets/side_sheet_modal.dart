@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 /// Modal Side Sheet - Blocks background interaction with scrim overlay (semi-transparent black)
 /// Use for: Forms, detailed editing, multi-step workflows
@@ -102,7 +103,7 @@ class _ModalSideSheetState extends State<ModalSideSheet> {
         children: [
           IconButton(
             icon: const Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => context.pop(),
             tooltip: 'Back',
           ),
           const SizedBox(width: 8),
@@ -115,7 +116,7 @@ class _ModalSideSheetState extends State<ModalSideSheet> {
           const Spacer(),
           IconButton(
             icon: const Icon(Icons.close),
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => context.pop(),
             tooltip: 'Close',
           ),
         ],
@@ -285,7 +286,7 @@ class _ModalSideSheetState extends State<ModalSideSheet> {
         children: [
           Expanded(
             child: OutlinedButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => context.pop('Cancel'),
               child: const Text('Cancel'),
             ),
           ),
@@ -304,13 +305,7 @@ class _ModalSideSheetState extends State<ModalSideSheet> {
   /// Validate form and save task
   void _handleSave(BuildContext context) {
     if (_formKey.currentState!.validate()) {
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Task "${_titleController.text}" created successfully'),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      context.pop('Task "${_titleController.text}" created successfully');
     }
   }
 }

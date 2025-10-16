@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 // Standard Bottom Sheet - Non-modal, doesn't block interaction with main content
 // Use case: Quick actions, supplementary content that users can dismiss easily
@@ -21,7 +22,7 @@ class StandardBottomSheet extends StatelessWidget {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(25), // 0.1 opacity ≈ 25 alpha
+            color: Colors.black.withAlpha(25),
             blurRadius: 10,
             spreadRadius: 2,
           ),
@@ -40,7 +41,7 @@ class StandardBottomSheet extends StatelessWidget {
               ),
               IconButton(
                 icon: const Icon(Icons.close),
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => context.pop('Closed'),
               ),
             ],
           ),
@@ -53,22 +54,12 @@ class StandardBottomSheet extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.share),
             title: const Text('Share'),
-            onTap: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Share action selected')),
-              );
-            },
+            onTap: () => context.pop('Share action selected'),
           ),
           ListTile(
             leading: const Icon(Icons.download),
             title: const Text('Download'),
-            onTap: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Download action selected')),
-              );
-            },
+            onTap: () => context.pop('Download action selected'),
           ),
         ],
       ),

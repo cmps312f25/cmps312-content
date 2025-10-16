@@ -10,26 +10,39 @@ import 'package:navigation/features/dialogs/widgets/profile_editor.dart';
 // - Has app bar with close/back button and save/confirm action
 // - Suitable for forms, settings, or multi-step processes
 // - Can contain scrollable content
-class FullScreenDialog extends StatelessWidget {
+class FullScreenDialog extends StatefulWidget {
   const FullScreenDialog({super.key});
 
   @override
+  State<FullScreenDialog> createState() => _FullScreenDialogState();
+}
+
+class _FullScreenDialogState extends State<FullScreenDialog> {
+  // GlobalKey<FormState> - Unique identifier for the Form widget
+  // Allows us to access form methods like validate() and save()
+  // Think of it as a "remote control" for the form
+  final formKey = GlobalKey<FormState>();
+
+  // TextEditingController - Manages the text content of TextField/TextFormField
+  // Purpose: Read user input and programmatically set/clear text
+  // Each text field needs its own controller
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+
+  // Boolean variable to track notification preference
+  // Using setState when this changes will trigger UI update
+  bool notificationsEnabled = true;
+
+  @override
+  void dispose() {
+    // Clean up controllers when widget is removed
+    nameController.dispose();
+    emailController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // GlobalKey<FormState> - Unique identifier for the Form widget
-    // Allows us to access form methods like validate() and save()
-    // Think of it as a "remote control" for the form
-    final formKey = GlobalKey<FormState>();
-
-    // TextEditingController - Manages the text content of TextField/TextFormField
-    // Purpose: Read user input and programmatically set/clear text
-    // Each text field needs its own controller
-    final nameController = TextEditingController();
-    final emailController = TextEditingController();
-
-    // Boolean variable to track notification preference
-    // StatefulBuilder in ProfileEditor will handle UI updates when this changes
-    bool notificationsEnabled = true;
-
     return Scaffold(
       // Full-screen dialogs use an AppBar with close and save actions
       appBar: AppBar(
@@ -40,13 +53,7 @@ class FullScreenDialog extends StatelessWidget {
         title: const Text('User Profile'),
         actions: [
           TextButton(
-            onPressed: () => _handleSave(
-              context,
-              formKey,
-              nameController,
-              emailController,
-              notificationsEnabled,
-            ),
+            onPressed: _handleSave,
             child: const Text('Save'),
           ),
         ],
@@ -57,7 +64,9 @@ class FullScreenDialog extends StatelessWidget {
         emailController: emailController,
         notificationsEnabled: notificationsEnabled,
         onNotificationsChanged: (value) {
-          notificationsEnabled = value;
+          setState(() {
+            notificationsEnabled = value;
+          });
         },
       ),
     );
@@ -65,13 +74,7 @@ class FullScreenDialog extends StatelessWidget {
 
   // Extracted save handler for better code organization
   // Validates form, extracts data, and displays success message
-  void _handleSave(
-    BuildContext context,
-    GlobalKey<FormState> formKey,
-    TextEditingController nameController,
-    TextEditingController emailController,
-    bool notificationsEnabled,
-  ) {
+  void _handleSave() {
     // Validate all TextFormFields in the form
     // Returns true if all validators pass, false otherwise
     if (formKey.currentState!.validate()) {

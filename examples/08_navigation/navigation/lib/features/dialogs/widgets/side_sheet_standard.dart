@@ -1,4 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+/// Standard Side Sheet Filter Result
+class ProductFilters {
+  final String category;
+  final RangeValues priceRange;
+  final bool inStockOnly;
+
+  const ProductFilters({
+    required this.category,
+    required this.priceRange,
+    required this.inStockOnly,
+  });
+
+  @override
+  String toString() {
+    return 'Category: $category | '
+        'Price: \$${priceRange.start.round()}-\$${priceRange.end.round()} | '
+        'In Stock: ${inStockOnly ? 'Yes' : 'No'}';
+  }
+}
 
 /// Standard Side Sheet - Non-modal supplementary surface
 /// Use for: Filters, contextual actions, supplemental info
@@ -79,7 +100,7 @@ class _StandardSideSheetState extends State<StandardSideSheet> {
           const Spacer(),
           IconButton(
             icon: const Icon(Icons.close),
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => context.pop(),
             tooltip: 'Close',
           ),
         ],
@@ -188,7 +209,7 @@ class _StandardSideSheetState extends State<StandardSideSheet> {
           const SizedBox(width: 12),
           Expanded(
             child: FilledButton(
-              onPressed: () => _applyFilters(context),
+              onPressed: () => _setActiveFilters(context),
               child: const Text('Apply'),
             ),
           ),
@@ -206,16 +227,13 @@ class _StandardSideSheetState extends State<StandardSideSheet> {
     });
   }
 
-  /// Apply filters and close sheet
-  void _applyFilters(BuildContext context) {
-    Navigator.pop(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Filters applied: $_selectedCategory, \$${_priceRange.start.round()}-\$${_priceRange.end.round()}',
-        ),
-        behavior: SnackBarBehavior.floating,
-      ),
+  /// Apply filters and close sheet with filter object
+  void _setActiveFilters(BuildContext context) {
+    final filters = ProductFilters(
+      category: _selectedCategory,
+      priceRange: _priceRange,
+      inStockOnly: _inStockOnly,
     );
+    context.pop(filters);
   }
 }

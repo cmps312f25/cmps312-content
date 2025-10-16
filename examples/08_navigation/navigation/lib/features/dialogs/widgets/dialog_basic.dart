@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 // Basic Dialog - Used for simple decisions, confirmations, or alerts
 // Characteristics:
@@ -11,26 +12,18 @@ class BasicDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      // Icon helps users quickly identify dialog purpose
       icon: const Icon(Icons.delete_outline, size: 32),
       title: const Text('Delete Item?'),
       content: const Text(
         'Are you sure you want to delete this item? This action cannot be undone.',
       ),
       actions: [
-        // Cancel action - typically appears first
         TextButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.pop('Cancel'),
           child: const Text('Cancel'),
         ),
-        // Primary action - use FilledButton for emphasis
         FilledButton(
-          onPressed: () {
-            Navigator.pop(context);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Item deleted')),
-            );
-          },
+          onPressed: () => context.pop('Delete'),
           child: const Text('Delete'),
         ),
       ],

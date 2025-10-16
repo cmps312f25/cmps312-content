@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:navigation/core/routing/app_router.dart';
 import 'package:navigation/core/widgets/nav_drawer.dart';
-import 'package:navigation/features/dialogs/widgets/basic_dialog.dart';
-import 'package:navigation/features/dialogs/widgets/list_dialog.dart';
+import 'package:navigation/features/dialogs/widgets/dialog_basic.dart';
+import 'package:navigation/features/dialogs/widgets/dialog_list.dart';
 import 'package:navigation/features/dialogs/widgets/bottom_sheet_modal.dart';
 import 'package:navigation/features/dialogs/widgets/bottom_sheet_standard.dart';
 import 'package:navigation/features/dialogs/widgets/side_sheet_standard.dart';
@@ -65,8 +65,8 @@ import 'package:navigation/features/dialogs/widgets/side_sheet_modal.dart';
 /// - Bottom Sheets: https://m3.material.io/components/bottom-sheets/guidelines
 /// - Side Sheets: https://m3.material.io/components/side-sheets/guidelines
 
-class DialogsScreen extends StatelessWidget {
-  const DialogsScreen({super.key});
+class DialogsSheetsScreen extends StatelessWidget {
+  const DialogsSheetsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -88,19 +88,34 @@ class DialogsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               ElevatedButton.icon(
-                onPressed: () => showDialog(
-                  context: context,
-                  builder: (context) => const BasicDialog(),
-                ),
+                onPressed: () async {
+                  final messenger = ScaffoldMessenger.of(context);
+                  final result = await showDialog<String>(
+                    context: context,
+                    builder: (context) => const BasicDialog(),
+                  );
+                  if (result != null && result != 'Cancel') {
+                    messenger.showSnackBar(
+                      SnackBar(content: Text("Selected: $result")),
+                    );
+                  }
+                },
                 icon: const Icon(Icons.info_outline),
                 label: const Text('Basic Dialog'),
               ),
               const SizedBox(height: 8),
               ElevatedButton.icon(
-                onPressed: () => showDialog(
-                  context: context,
-                  builder: (context) => const ListDialog(),
-                ),
+                onPressed: () async {
+                  final messenger = ScaffoldMessenger.of(context);
+                  final result = await showDialog<String>(
+                    context: context,
+                    builder: (context) => const ListDialog(),
+                  );
+                  if (result != null && result != 'Cancel') {
+                    messenger.showSnackBar(
+                        SnackBar(content: Text('Selected: $result')));
+                  }
+                },
                 icon: const Icon(Icons.list),
                 label: const Text('List Dialog'),
               ),
@@ -122,13 +137,30 @@ class DialogsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               ElevatedButton.icon(
-                onPressed: () => _showStandardBottomSheet(context),
+                onPressed: () async {
+                  final messenger = ScaffoldMessenger.of(context);
+                  final result = await _showStandardBottomSheet(context);
+                  if (result != null && result != 'Closed') {
+                    messenger.showSnackBar(SnackBar(content: Text(result)));
+                  }
+                },
                 icon: const Icon(Icons.arrow_upward),
                 label: const Text('Standard Bottom Sheet'),
               ),
               const SizedBox(height: 8),
               ElevatedButton.icon(
-                onPressed: () => _showModalBottomSheet(context),
+                onPressed: () async {
+                  final messenger = ScaffoldMessenger.of(context);
+                  final result = await _showModalBottomSheet(context);
+                  if (result != null) {
+                    messenger.showSnackBar(
+                      SnackBar(
+                        content: Text('Filters applied: ${result.toString()}'),
+                        duration: const Duration(seconds: 4),
+                      ),
+                    );
+                  }
+                },
                 icon: const Icon(Icons.filter_list),
                 label: const Text('Modal Bottom Sheet'),
               ),
@@ -144,13 +176,30 @@ class DialogsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               ElevatedButton.icon(
-                onPressed: () => _showStandardSideSheet(context),
+                onPressed: () async {
+                  final messenger = ScaffoldMessenger.of(context);
+                  final result = await _showStandardSideSheet(context);
+                  if (result != null) {
+                    messenger.showSnackBar(
+                      SnackBar(
+                        content: Text('Filters applied: ${result.toString()}'),
+                        duration: const Duration(seconds: 4),
+                      ),
+                    );
+                  }
+                },
                 icon: const Icon(Icons.view_sidebar),
                 label: const Text('Standard Side Sheet'),
               ),
               const SizedBox(height: 8),
               ElevatedButton.icon(
-                onPressed: () => _showModalSideSheet(context),
+                onPressed: () async {
+                  final messenger = ScaffoldMessenger.of(context);
+                  final result = await _showModalSideSheet(context);
+                  if (result != null && result != 'Cancel') {
+                    messenger.showSnackBar(SnackBar(content: Text(result)));
+                  }
+                },
                 icon: const Icon(Icons.view_sidebar_outlined),
                 label: const Text('Modal Side Sheet'),
               ),
@@ -163,8 +212,8 @@ class DialogsScreen extends StatelessWidget {
 
   /// Shows standard (non-modal) bottom sheet
   /// Allows interaction with main content, easy to dismiss
-  void _showStandardBottomSheet(BuildContext context) {
-    showBottomSheet(
+  Future<String?> _showStandardBottomSheet(BuildContext context) async {
+    return await showModalBottomSheet<String>(
       context: context,
       builder: (context) => const StandardBottomSheet(),
     );
@@ -172,11 +221,13 @@ class DialogsScreen extends StatelessWidget {
 
   /// Shows modal bottom sheet - blocks interaction with main content
   /// User must complete action or dismiss before continuing
-  void _showModalBottomSheet(BuildContext context) {
-    showModalBottomSheet(
+  /// Returns FilterOptions object with user's selections
+  Future<FilterOptions?> _showModalBottomSheet(BuildContext context) async {
+    return await showModalBottomSheet<FilterOptions>(
       context: context,
       isDismissible: true,
-      showDragHandle: true, // Material 3 drag handle
+      showDragHandle: true,
+      isScrollControlled: true, // Allow keyboard to push content up
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
@@ -186,12 +237,13 @@ class DialogsScreen extends StatelessWidget {
 
   /// Shows standard (non-modal) side sheet from right edge
   /// Background stays clear - user can still see and interact with main content
-  void _showStandardSideSheet(BuildContext context) {
-    showGeneralDialog(
+  /// Returns SideSheetFilters object with user's selections
+  Future<ProductFilters?> _showStandardSideSheet(BuildContext context) async {
+    return await showGeneralDialog<ProductFilters>(
       context: context,
       barrierDismissible: true,
       barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-      barrierColor: Colors.transparent, // No darkening effect
+      barrierColor: Colors.transparent,
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, animation, secondaryAnimation) {
         return Align(
@@ -213,13 +265,12 @@ class DialogsScreen extends StatelessWidget {
 
   /// Shows modal side sheet - blocks interaction with main content
   /// Dims background to focus user attention on the sheet
-  void _showModalSideSheet(BuildContext context) {
-    showGeneralDialog(
+  Future<String?> _showModalSideSheet(BuildContext context) async {
+    return await showGeneralDialog<String>(
       context: context,
       barrierDismissible: true,
       barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-      barrierColor:
-          Colors.black.withAlpha(128), // Semi-transparent dark overlay
+      barrierColor: Colors.black.withAlpha(128),
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, animation, secondaryAnimation) {
         return Align(

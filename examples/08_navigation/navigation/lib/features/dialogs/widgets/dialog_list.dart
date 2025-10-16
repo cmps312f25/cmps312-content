@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 // Basic Dialog with List - Used for simple selections from a list
 // Useful when users need to choose one option from multiple choices
@@ -24,7 +25,6 @@ class ListDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(title),
-      // Use SingleChildScrollView for longer lists
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -32,19 +32,14 @@ class ListDialog extends StatelessWidget {
             return ListTile(
               leading: Icon(option.$1),
               title: Text(option.$2),
-              onTap: () {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Selected: ${option.$2}')),
-                );
-              },
+              onTap: () => context.pop(option.$2),
             );
           }).toList(),
         ),
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.pop('Cancel'),
           child: const Text('Cancel'),
         ),
       ],

@@ -77,22 +77,11 @@ class ProfileEditor extends StatelessWidget {
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 8),
-            // StatefulBuilder - Creates local state for this widget only
-            // Allows the switch to rebuild when toggled without rebuilding entire form
-            StatefulBuilder(
-              builder: (context, setState) {
-                return SwitchListTile(
-                  title: const Text('Enable Notifications'),
-                  subtitle: const Text('Receive updates and alerts'),
-                  value: notificationsEnabled,
-                  onChanged: (value) {
-                    // setState updates the variable and rebuilds only this widget
-                    setState(() {
-                      onNotificationsChanged(value);
-                    });
-                  },
-                );
-              },
+            SwitchListTile(
+              title: const Text('Enable Notifications'),
+              subtitle: const Text('Receive updates and alerts'),
+              value: notificationsEnabled,
+              onChanged: onNotificationsChanged,
             ),
             const SizedBox(height: 16),
             Card(
