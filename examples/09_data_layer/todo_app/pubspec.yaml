@@ -1,0 +1,24 @@
+name: todoapp
+description: >
+  The typesafe, reactive and lightweight SQLite abstraction for your Flutter applications.
+  This is an example on how to use the library.
+version: 1.0.0
+homepage: https://pinchbv.github.io/floor/
+publish_to: none
+
+environment:
+  sdk: ">=3.2.6 <4.0.0"
+
+dependencies:
+  floor: ^1.5.0
+  flutter:
+    sdk: flutter
+  sqflite: any
+
+dev_dependencies:
+  analyzer: ^6.4.1
+  build_runner: ^2.4.13
+  floor_generator: ^1.5.0
+  flutter_lints: ^3.0.1
+  flutter_test:
+    sdk: flutter
