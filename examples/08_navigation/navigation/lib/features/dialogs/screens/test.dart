@@ -62,11 +62,87 @@ class MyAppBarExample extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.settings),
               title: const Text('Settings'),
-              onTap: () {},
+              onTap: () {
+                showDialog(
+  context: context,
+  builder: (context) => 
+  AlertDialog(
+    title: const Text('Select Ringtone'),
+    content: SingleChildScrollView(  // Handle overflow
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+            ListTile(
+              leading: const Icon(Icons.music_note),
+              title: const Text('Default'),
+              onTap: () => context.pop('Default'), // Close + return value
+            ),
+            ListTile(
+              leading: const Icon(Icons.album),
+              title: const Text('Classical'),
+              onTap: () => context.pop('Classical'),
+            ),
+          // More options...
+        ],
+      ),
+    ),
+  ),
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.pop(context),
+        child: const Text('Cancel'),
+      ),
+    ],
+  ),
+  
+  // Standard Bottom Sheet
+showBottomSheet(
+  context: context,
+  builder: (context) => MyBottomSheet(),
+);
+
+// Modal Bottom Sheet
+final result = await showModalBottomSheet(
+  context: context,
+  isDismissible: true,           // Tap outside to dismiss
+  isScrollControlled: false,     // Full-height when true
+  showDragHandle: true,          // M3 drag handle
+  enableDrag: true,              // Swipe down to dismiss
+  builder: (context) => MyBottomSheet(),
+);
+
+void _showSideSheet(BuildContext context, {bool modal = false}) {
+  showGeneralDialog(
+    context: context,
+    barrierDismissible: true, // Allow tap outside to close
+    // 👇 Key difference:
+    barrierColor: modal ? Colors.black54 : Colors.transparent, 
+    // modal → dimmed background (requires attention)
+    // standard → transparent (non-blocking overlay)
+    pageBuilder: (_, __, ___) {
+      return Align(
+        alignment: Alignment.centerRight, // Slide in from right edge
+        child: Container(
+          width: 300,
+          color: Colors.white,
+          child: const Center(
+            child: Text('Side Sheet Content'),
+          ),
+        ),
+      );
+    },
+  );
+}
+
+
+              },
             ),
           ],
         ),
       )
     );
+
+
+    
   }
 }

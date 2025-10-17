@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-// Basic Dialog with List - Used for simple selections from a list
+// Selection List Dialog - Used for simple selections from a list
 // Useful when users need to choose one option from multiple choices
 // Example: Selecting ringtones, notification sounds, themes, etc.
-class ListDialog extends StatelessWidget {
+class SelectionListDialog extends StatelessWidget {
   final List<(IconData icon, String label)> options;
   final String title;
 
-  const ListDialog({
+  const SelectionListDialog({
     super.key,
     this.title = 'Select Ringtone',
     this.options = const [

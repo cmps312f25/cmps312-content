@@ -1,5 +1,5 @@
 # 🎭 Dialogs & Sheets in Flutter
-## Material Design 3 Overlay Components
+## Overlay Components
 
 > A comprehensive guide to implementing Dialogs, Bottom Sheets, and Side Sheets following Material Design 3 guidelines and Flutter best practices.
 

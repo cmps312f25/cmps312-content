@@ -19,11 +19,13 @@ class BasicDialog extends StatelessWidget {
       ),
       actions: [
         TextButton(
-          onPressed: () => context.pop('Cancel'),
+          // closes dialog and returns false value to caller
+          onPressed: () => context.pop(false),
           child: const Text('Cancel'),
         ),
         FilledButton(
-          onPressed: () => context.pop('Delete'),
+          // FilledButton for primary action, returns true to caller
+          onPressed: () => context.pop(true),
           child: const Text('Delete'),
         ),
       ],

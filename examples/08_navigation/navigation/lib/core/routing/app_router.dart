@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:navigation/core/widgets/nav_scaffold_responsive.dart';
 import 'package:navigation/features/dialogs/screens/dialogs_sheets.dart';
@@ -26,7 +27,7 @@ class AppRoutes {
 
   // Detail/Dialog routes
   static const fruitDetails = '/fruitDetails';
-  static const fullscreenDialog = '/fullscreenDialog';
+  static const profileDialog = '/profileDialog';
 
   /// Routes that display bottom navigation bar
   static const bottomNavRoutes = [home, fruits, dialogs];
@@ -34,7 +35,7 @@ class AppRoutes {
 
 /// Global GoRouter configuration
 /// Defines app navigation structure using declarative routing
-/// 
+///
 /// Architecture Decision:
 /// - ShellRoute provides persistent navigation chrome (bottom bar/rail/drawer)
 /// - Routes outside ShellRoute are standalone (no persistent navigation)
@@ -100,10 +101,19 @@ final appRouter = GoRouter(
       },
     ),
 
-    // Fullscreen dialog example
+    // Fullscreen dialog - uses pageBuilder for custom page transition
     GoRoute(
-      path: AppRoutes.fullscreenDialog,
-      builder: (context, state) => const FullScreenDialog(),
+      path: AppRoutes.profileDialog,
+      pageBuilder: (context, state) {
+        return MaterialPage(
+          // fullscreenDialog: true changes the transition animation
+          // - Shows slide-up from bottom (instead of slide from right)
+          // - Displays close icon (✕) instead of back arrow (←)
+          // - Indicates this is a temporary task, not a destination
+          fullscreenDialog: true, // 👈 Key difference from regular navigation
+          child: const FullScreenDialog(),
+        );
+      },
     ),
   ],
 );

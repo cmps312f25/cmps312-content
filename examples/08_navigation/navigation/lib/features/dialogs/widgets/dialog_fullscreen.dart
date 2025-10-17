@@ -46,9 +46,11 @@ class _FullScreenDialogState extends State<FullScreenDialog> {
     return Scaffold(
       // Full-screen dialogs use an AppBar with close and save actions
       appBar: AppBar(
+        // Close icon (✕) instead of back arrow (←) indicates temporary task
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () => context.pop(),
+          tooltip: 'Close',
         ),
         title: const Text('User Profile'),
         actions: [

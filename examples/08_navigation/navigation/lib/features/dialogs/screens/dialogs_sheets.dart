@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:navigation/core/routing/app_router.dart';
 import 'package:navigation/core/widgets/nav_drawer.dart';
 import 'package:navigation/features/dialogs/widgets/dialog_basic.dart';
-import 'package:navigation/features/dialogs/widgets/dialog_list.dart';
+import 'package:navigation/features/dialogs/widgets/dialog_selection_list.dart';
 import 'package:navigation/features/dialogs/widgets/bottom_sheet_modal.dart';
 import 'package:navigation/features/dialogs/widgets/bottom_sheet_standard.dart';
 import 'package:navigation/features/dialogs/widgets/side_sheet_standard.dart';
@@ -92,15 +92,13 @@ class DialogsSheetsScreen extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: () async {
                   final messenger = ScaffoldMessenger.of(context);
-                  final result = await showDialog<String>(
+                  final confirmed = await showDialog<bool>(
                     context: context,
                     builder: (context) => const BasicDialog(),
                   );
-                  if (result != null && result != 'Cancel') {
-                    messenger.showSnackBar(
-                      SnackBar(content: Text("Selected: $result")),
-                    );
-                  }
+                  messenger.showSnackBar(
+                    SnackBar(content: Text("Delete Confirmed: $confirmed")),
+                  );
                 },
                 icon: const Icon(Icons.info_outline),
                 label: const Text('Basic Dialog'),
@@ -109,21 +107,19 @@ class DialogsSheetsScreen extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: () async {
                   final messenger = ScaffoldMessenger.of(context);
-                  final result = await showDialog<String>(
+                  final selectedValue = await showDialog<String>(
                     context: context,
-                    builder: (context) => const ListDialog(),
+                    builder: (context) => const SelectionListDialog(),
                   );
-                  if (result != null && result != 'Cancel') {
-                    messenger.showSnackBar(
-                        SnackBar(content: Text('Selected: $result')));
-                  }
+                  messenger.showSnackBar(SnackBar(
+                      content: Text('Selected value: $selectedValue')));
                 },
                 icon: const Icon(Icons.list),
-                label: const Text('List Dialog'),
+                label: const Text('Selection List Dialog'),
               ),
               const SizedBox(height: 8),
               ElevatedButton.icon(
-                onPressed: () => context.push(AppRoutes.fullscreenDialog),
+                onPressed: () => context.push(AppRoutes.profileDialog),
                 icon: const Icon(Icons.fullscreen),
                 label: const Text('Full-screen Dialog'),
               ),
@@ -180,11 +176,11 @@ class DialogsSheetsScreen extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: () async {
                   final messenger = ScaffoldMessenger.of(context);
-                  final result = await _showStandardSideSheet(context);
-                  if (result != null) {
+                  final userProfile = await _showStandardSideSheet(context);
+                  if (userProfile != null) {
                     messenger.showSnackBar(
                       SnackBar(
-                        content: Text('Filters applied: ${result.toString()}'),
+                        content: Text('Filters applied: ${userProfile.toString()}'),
                         duration: const Duration(seconds: 4),
                       ),
                     );
