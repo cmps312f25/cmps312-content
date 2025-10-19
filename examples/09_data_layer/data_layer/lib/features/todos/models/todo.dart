@@ -12,8 +12,8 @@ enum TodoType {
 
 @Entity(tableName: 'todo')
 class Todo {
-  @PrimaryKey(autoGenerate: true)
-  final int id;
+  @PrimaryKey() // autoGenerate: true
+  final String id;
 
   final String description;
   final bool completed;
