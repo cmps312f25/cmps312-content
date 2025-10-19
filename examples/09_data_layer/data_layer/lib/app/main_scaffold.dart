@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:data_layer/features/todos/providers/todo_stats_provider.dart';
 
 /// Navigation configuration for app routes
 /// Centralizes route metadata for consistent navigation UI
@@ -43,14 +45,15 @@ class AppRoutes {
 
 /// Main scaffold with bottom navigation bar
 /// Wraps all screens to provide consistent navigation
-class MainScaffold extends StatelessWidget {
+class MainScaffold extends ConsumerWidget {
   final Widget child;
 
   const MainScaffold({super.key, required this.child});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final currentPath = GoRouterState.of(context).matchedLocation;
+    final pendingCount = ref.watch(pendingTodosCountProvider);
 
     return Scaffold(
       body: child,
@@ -68,7 +71,14 @@ class MainScaffold extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(route.icon, color: color, size: 24),
+                    // Add badge for todo route
+                    if (route.path == '/todo' && pendingCount > 0)
+                      Badge(
+                        label: Text('$pendingCount'),
+                        child: Icon(route.icon, color: color, size: 24),
+                      )
+                    else
+                      Icon(route.icon, color: color, size: 24),
                     const SizedBox(height: 4),
                     Text(
                       route.label,

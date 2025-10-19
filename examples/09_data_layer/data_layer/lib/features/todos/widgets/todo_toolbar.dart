@@ -26,7 +26,7 @@ class TodoToolbar extends ConsumerWidget {
             ref,
             TodoFilter.pending,
             filter,
-            ref.watch(activeTodosCountProvider),
+            ref.watch(pendingTodosCountProvider),
           ),
           _buildButton(
             ref,

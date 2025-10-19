@@ -6,7 +6,7 @@ import 'package:data_layer/features/todos/providers/todo_list_provider.dart';
 /// Separate providers allow widgets to subscribe only to what they need.
 /// Now works with AsyncValue from StreamNotifier.
 
-final activeTodosCountProvider = Provider<int>((ref) {
+final pendingTodosCountProvider = Provider<int>((ref) {
   final todosAsync = ref.watch(todoListProvider);
   return todosAsync.maybeWhen(
     data: (todos) => todos.where((todo) => !todo.completed).length,
