@@ -55,38 +55,36 @@ class MainScaffold extends StatelessWidget {
     return Scaffold(
       body: child,
       bottomNavigationBar: BottomAppBar(
+        height: 60,
         padding: EdgeInsets.zero,
-        child: SizedBox(
-          height: 60,
-          child: Row(
-            children: AppRoutes.all.map((route) {
-              final isActive = currentPath == route.path;
-              final color = isActive ? route.color : Colors.grey;
+        child: Row(
+          children: AppRoutes.all.map((route) {
+            final isActive = currentPath == route.path;
+            final color = isActive ? route.color : Colors.grey;
 
-              return Expanded(
-                child: InkWell(
-                  onTap: () => context.go(route.path),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(route.icon, color: color, size: 24),
-                      const SizedBox(height: 4),
-                      Text(
-                        route.label,
-                        style: TextStyle(
-                          color: color,
-                          fontSize: 12,
-                          fontWeight: isActive
-                              ? FontWeight.w600
-                              : FontWeight.normal,
-                        ),
+            return Expanded(
+              child: InkWell(
+                onTap: () => context.go(route.path),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(route.icon, color: color, size: 24),
+                    const SizedBox(height: 4),
+                    Text(
+                      route.label,
+                      style: TextStyle(
+                        color: color,
+                        fontSize: 12,
+                        fontWeight: isActive
+                            ? FontWeight.w600
+                            : FontWeight.normal,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              );
-            }).toList(),
-          ),
+              ),
+            );
+          }).toList(),
         ),
       ),
     );
