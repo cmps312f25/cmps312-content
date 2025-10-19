@@ -38,13 +38,13 @@ This todo feature uses Floor (SQLite) for local data persistence with Riverpod f
 - **description**: Todo text
 - **completed**: Boolean status
 - **type**: TodoType enum (personal/work/family)
-- **createdAt**: Unix timestamp (milliseconds)
+- **createdAt**: Timestamp (milliseconds)
 
 ### Database
 - Uses **Floor** package for type-safe SQLite operations
 - Automatic database initialization with test data
 - Type converter for TodoType enum
-- Stores DateTime as Unix timestamp for SQLite compatibility
+- Stores DateTime as timestamp for SQLite compatibility
 
 ### State Management Pattern
 - **AsyncNotifierProvider** for async operations
@@ -77,7 +77,7 @@ todosAsync.when(
 
 After modifying database entities, run:
 ```bash
-flutter pub run build_runner build --delete-conflicting-outputs
+dart pub run build_runner build --delete-conflicting-outputs
 ```
 
 ## Database Location
