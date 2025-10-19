@@ -40,7 +40,7 @@ class HomeScreen extends StatelessWidget {
     NavigationRoute(
       icon: Icons.shopping_cart,
       title: 'Products',
-      subtitle: 'AsyncNotifierProvider Example',
+      subtitle: 'FutureProvider Example',
       route: '/products',
       color: Colors.orange,
     ),

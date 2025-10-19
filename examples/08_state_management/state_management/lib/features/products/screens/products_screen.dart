@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:state_management/features/products/providers/categories_provider.dart';
 import 'package:state_management/features/products/providers/selected_category_provider.dart';
+import 'package:state_management/features/products/providers/filtered_products_provider.dart';
 import 'package:state_management/features/products/widgets/product_tile.dart';
 
 class ProductsScreen extends ConsumerWidget {

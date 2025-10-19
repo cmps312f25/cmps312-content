@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:state_management/features/app_config/providers/app_config_provider.dart';
+import 'package:state_management/features/app_config/providers/max_items_per_page_provider.dart';
+import 'package:state_management/features/app_config/providers/theme_mode_provider.dart';
 
 class AppConfigScreen extends ConsumerWidget {
   const AppConfigScreen({super.key});

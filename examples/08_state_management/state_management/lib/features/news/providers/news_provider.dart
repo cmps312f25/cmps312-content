@@ -3,20 +3,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:state_management/features/news/models/news_model.dart';
 
-// Streams top 3 news articles, refreshing every 20 seconds
+/// StreamProvider for continuous data updates.
+/// async* creates a generator function (stream)
+/// .autoDispose() cleans up when widget unmounts
 final newsProvider = StreamProvider.autoDispose<List<NewsArticle>>((
   ref,
 ) async* {
-  const apiKey = 'demo'; // For demo purposes
+  const apiKey = 'demo';
 
   while (true) {
+    // Infinite loop for periodic updates
     try {
-      // Using NewsAPI.org - Free tier allows 100 requests/day
-      // Get your free key at https://newsapi.org
       final url = Uri.parse(
         'https://newsapi.org/v2/top-headlines?country=us&pageSize=3&apiKey=$apiKey',
       );
-
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
@@ -25,20 +25,19 @@ final newsProvider = StreamProvider.autoDispose<List<NewsArticle>>((
             .take(3)
             .map((article) => NewsArticle.fromJson(article))
             .toList();
-
-        yield articles;
+        yield articles; // Emit data to stream
       } else {
         yield _getSampleNews();
       }
     } catch (e) {
-      yield _getSampleNews();
+      yield _getSampleNews(); // Fallback on error
     }
 
-    await Future.delayed(const Duration(seconds: 20));
+    await Future.delayed(const Duration(seconds: 20)); // Wait before next fetch
   }
 });
 
-// Sample news data (fallback when API unavailable)
+/// Fallback sample data when API is unavailable.
 List<NewsArticle> _getSampleNews() {
   final now = DateTime.now();
   return [

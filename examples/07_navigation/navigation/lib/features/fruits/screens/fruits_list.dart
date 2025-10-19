@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:navigation/core/routing/app_router.dart';
-import 'package:navigation/core/widgets/nav_drawer.dart';
+import 'package:navigation/app/routing/app_router.dart';
+import 'package:navigation/app/widgets/nav_drawer.dart';
 import 'package:navigation/features/fruits/models/fruit.dart';
 import 'package:navigation/features/fruits/repositories/fruit_repository.dart';
 import 'package:navigation/features/fruits/widgets/fruit_list_tile.dart';

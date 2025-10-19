@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:state_management/features/todos/providers/todo_filter_provider.dart';
+import 'package:state_management/features/todos/providers/todo_stats_provider.dart';
 
 class TodoToolbar extends ConsumerWidget {
   const TodoToolbar({super.key});
@@ -23,7 +24,7 @@ class TodoToolbar extends ConsumerWidget {
           ),
           _buildButton(
             ref,
-            TodoFilter.active,
+            TodoFilter.pending,
             filter,
             ref.watch(activeTodosCountProvider),
           ),

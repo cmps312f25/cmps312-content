@@ -10,6 +10,4 @@ class Fruit {
     required this.title,
     required this.description,
   });
-
-  
 }

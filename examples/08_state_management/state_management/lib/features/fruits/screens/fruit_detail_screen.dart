@@ -18,24 +18,36 @@ class FruitDetailScreen extends ConsumerWidget {
           final fruit = fruits.firstWhere((f) => f.name == fruitName);
           return Column(
             children: [
-              Image.asset(
-                fruit.imageUrl,
-                height: 300,
-                width: double.infinity,
-                fit: BoxFit.cover,
+              // Image takes 80% of available space
+              Expanded(
+                flex: 4,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Image.asset(
+                    fruit.imageUrl,
+                    width: double.infinity,
+                    fit: BoxFit.contain, // Show full image without cropping
+                  ),
+                ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text(
-                  fruit.description,
-                  style: const TextStyle(fontSize: 16),
+              // Description takes 20% of available space, no scrolling
+              Expanded(
+                flex: 1,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    fruit.description,
+                    style: const TextStyle(fontSize: 16),
+                    maxLines: null, // Allow text to wrap
+                    overflow: TextOverflow.visible, // Show all text
+                  ),
                 ),
               ),
             ],
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(
+        error: (err, _) => Center(
           child: Text('Error: $err', style: const TextStyle(color: Colors.red)),
         ),
       ),

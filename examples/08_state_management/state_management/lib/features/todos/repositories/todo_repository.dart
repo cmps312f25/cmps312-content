@@ -8,10 +8,8 @@ class TodoRepository {
 
   //Return sample Todos data
   static getTodos() => const [
-        Todo(id: 'todo-1', description: 'Learn Navigation'),
-        Todo(
-            id: 'todo-2',
-            description: 'Practice state management using Riverpod'),
-        Todo(id: 'todo-3', description: 'Explore more widgets and layouts'),
-      ];
+    Todo(id: 'todo-1', description: 'Learn Navigation'),
+    Todo(id: 'todo-2', description: 'Practice state management using Riverpod'),
+    Todo(id: 'todo-3', description: 'Explore more widgets and layouts'),
+  ];
 }

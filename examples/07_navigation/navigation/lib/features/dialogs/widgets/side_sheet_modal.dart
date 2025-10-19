@@ -4,14 +4,14 @@ import 'package:go_router/go_router.dart';
 /// Modal Side Sheet - Blocks background interaction with scrim overlay (semi-transparent black)
 /// Use for: Forms, detailed editing, multi-step workflows
 /// M3 Reference: https://m3.material.io/components/side-sheets
-class ModalSideSheet extends StatefulWidget {
-  const ModalSideSheet({super.key});
+class TaskEditorModalSheet extends StatefulWidget {
+  const TaskEditorModalSheet({super.key});
 
   @override
-  State<ModalSideSheet> createState() => _ModalSideSheetState();
+  State<TaskEditorModalSheet> createState() => _TaskEditorModalSheetState();
 }
 
-class _ModalSideSheetState extends State<ModalSideSheet> {
+class _TaskEditorModalSheetState extends State<TaskEditorModalSheet> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();

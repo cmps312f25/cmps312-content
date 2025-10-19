@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:state_management/features/todos/providers/todo_filter_provider.dart';
+import 'package:state_management/features/todos/providers/filtered_todos_provider.dart';
 import 'package:state_management/features/todos/widgets/add_todo_field.dart';
 import 'package:state_management/features/todos/widgets/todo_tile.dart';
 import 'package:state_management/features/todos/widgets/todo_toolbar.dart';

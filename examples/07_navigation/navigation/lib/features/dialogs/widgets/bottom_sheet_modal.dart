@@ -50,8 +50,8 @@ class FilterOptions {
   }
 }
 
-class ModalBottomSheetContent extends StatelessWidget {
-  const ModalBottomSheetContent({super.key});
+class FilterOptionsModalBottomSheet extends StatelessWidget {
+  const FilterOptionsModalBottomSheet({super.key});
 
   @override
   Widget build(BuildContext context) {

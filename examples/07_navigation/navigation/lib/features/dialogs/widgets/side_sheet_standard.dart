@@ -24,14 +24,14 @@ class ProductFilters {
 /// Standard Side Sheet - Non-modal supplementary surface
 /// Use for: Filters, contextual actions, supplemental info
 /// M3 Reference: https://m3.material.io/components/side-sheets
-class StandardSideSheet extends StatefulWidget {
-  const StandardSideSheet({super.key});
+class ProductFiltersSheet extends StatefulWidget {
+  const ProductFiltersSheet({super.key});
 
   @override
-  State<StandardSideSheet> createState() => _StandardSideSheetState();
+  State<ProductFiltersSheet> createState() => _ProductFiltersSheetState();
 }
 
-class _StandardSideSheetState extends State<StandardSideSheet> {
+class _ProductFiltersSheetState extends State<ProductFiltersSheet> {
   String _selectedCategory = 'All';
   RangeValues _priceRange = const RangeValues(0, 100);
   bool _inStockOnly = false;

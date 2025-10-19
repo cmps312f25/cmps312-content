@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:navigation/core/routing/app_router.dart';
+import 'package:navigation/app/routing/app_router.dart';
 
 /// Application entry point
 /// Initializes the Flutter app with GoRouter-based navigation

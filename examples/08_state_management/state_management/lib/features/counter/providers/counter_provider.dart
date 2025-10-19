@@ -1,14 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// Manages counter state with increment/decrement methods
+/// NotifierProvider for mutable state with methods to update the state.
 class CounterNotifier extends Notifier<int> {
   @override
   int build() => 0; // Initial state
 
-  void increment() => state++;
+  void increment() => state++; // state++ triggers rebuild
 
   void decrement() {
-    if (state > 0) state--;
+    if (state > 0) state--; // Guard against negative values
   }
 }
 

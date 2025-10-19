@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:navigation/core/routing/app_router.dart';
-import 'package:navigation/core/widgets/nav_drawer.dart';
+import 'package:navigation/app/routing/app_router.dart';
+import 'package:navigation/app/widgets/nav_drawer.dart';
 import 'package:navigation/features/dialogs/widgets/dialog_basic.dart';
 import 'package:navigation/features/dialogs/widgets/dialog_selection_list.dart';
 import 'package:navigation/features/dialogs/widgets/bottom_sheet_modal.dart';
@@ -70,140 +70,205 @@ class DialogsSheetsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isSmallScreen = MediaQuery.of(context).size.width < 600;
+    final isMobile = MediaQuery.of(context).size.width < 600;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dialogs & Sheets'),
       ),
-      drawer: isSmallScreen ? const NavDrawer() : null,
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // ─── Dialogs ───
-              Text(
-                'Dialogs',
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              const SizedBox(height: 8),
-              ElevatedButton.icon(
-                onPressed: () async {
-                  final messenger = ScaffoldMessenger.of(context);
-                  final confirmed = await showDialog<bool>(
-                    context: context,
-                    builder: (context) => const BasicDialog(),
-                  );
-                  messenger.showSnackBar(
-                    SnackBar(content: Text("Delete Confirmed: $confirmed")),
-                  );
-                },
-                icon: const Icon(Icons.info_outline),
-                label: const Text('Basic Dialog'),
-              ),
-              const SizedBox(height: 8),
-              ElevatedButton.icon(
-                onPressed: () async {
-                  final messenger = ScaffoldMessenger.of(context);
-                  final selectedValue = await showDialog<String>(
-                    context: context,
-                    builder: (context) => const SelectionListDialog(),
-                  );
-                  messenger.showSnackBar(SnackBar(
-                      content: Text('Selected value: $selectedValue')));
-                },
-                icon: const Icon(Icons.list),
-                label: const Text('Selection List Dialog'),
-              ),
-              const SizedBox(height: 8),
-              ElevatedButton.icon(
-                onPressed: () => context.push(AppRoutes.profileDialog),
-                icon: const Icon(Icons.fullscreen),
-                label: const Text('Full-screen Dialog'),
-              ),
+      drawer: isMobile ? const NavDrawer() : null,
+      // For large screens: show ProductFiltersSheet as endDrawer (side sheet)
+      endDrawer: !isMobile
+          ? const Drawer(
+              width: 320,
+              child: ProductFiltersSheet(),
+            )
+          : null,
+      body: Stack(
+        children: [
+          // Main content
+          Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // ─── Dialogs ───
+                  Text(
+                    'Dialogs',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  const SizedBox(height: 8),
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      final messenger = ScaffoldMessenger.of(context);
+                      final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => const BasicDialog(),
+                      );
+                      messenger.showSnackBar(
+                        SnackBar(content: Text("Delete Confirmed: $confirmed")),
+                      );
+                    },
+                    icon: const Icon(Icons.info_outline),
+                    label: const Text('Basic Dialog'),
+                  ),
+                  const SizedBox(height: 8),
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      final messenger = ScaffoldMessenger.of(context);
+                      final selectedValue = await showDialog<String>(
+                        context: context,
+                        builder: (context) => const SelectionListDialog(),
+                      );
+                      messenger.showSnackBar(SnackBar(
+                          content: Text('Selected value: $selectedValue')));
+                    },
+                    icon: const Icon(Icons.list),
+                    label: const Text('Selection List Dialog'),
+                  ),
+                  const SizedBox(height: 8),
+                  ElevatedButton.icon(
+                    onPressed: () => context.push(AppRoutes.profileDialog),
+                    icon: const Icon(Icons.fullscreen),
+                    label: const Text('Full-screen Dialog'),
+                  ),
 
-              const SizedBox(height: 16),
-              const Divider(),
-              const SizedBox(height: 8),
+                  const SizedBox(height: 16),
+                  const Divider(),
+                  const SizedBox(height: 8),
 
-              // ─── Bottom Sheets ───
-              Text(
-                'Bottom Sheets',
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              const SizedBox(height: 8),
-              ElevatedButton.icon(
-                onPressed: () async {
-                  final messenger = ScaffoldMessenger.of(context);
-                  final result = await _showStandardBottomSheet(context);
-                  if (result != null && result != 'Closed') {
-                    messenger.showSnackBar(SnackBar(content: Text(result)));
-                  }
-                },
-                icon: const Icon(Icons.arrow_upward),
-                label: const Text('Standard Bottom Sheet'),
-              ),
-              const SizedBox(height: 8),
-              ElevatedButton.icon(
-                onPressed: () async {
-                  final messenger = ScaffoldMessenger.of(context);
-                  final result = await _showModalBottomSheet(context);
-                  if (result != null) {
-                    messenger.showSnackBar(
-                      SnackBar(
-                        content: Text('Filters applied: ${result.toString()}'),
-                        duration: const Duration(seconds: 4),
-                      ),
-                    );
-                  }
-                },
-                icon: const Icon(Icons.filter_list),
-                label: const Text('Modal Bottom Sheet'),
-              ),
+                  // ─── Bottom Sheets ───
+                  Text(
+                    'Bottom Sheets',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  const SizedBox(height: 8),
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      final messenger = ScaffoldMessenger.of(context);
+                      final result = await _showStandardBottomSheet(context);
+                      if (result != null && result != 'Closed') {
+                        messenger.showSnackBar(SnackBar(content: Text(result)));
+                      }
+                    },
+                    icon: const Icon(Icons.arrow_upward),
+                    label: const Text('Standard Bottom Sheet'),
+                  ),
+                  const SizedBox(height: 8),
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      final messenger = ScaffoldMessenger.of(context);
+                      final result = await _showModalBottomSheet(context);
+                      if (result != null) {
+                        messenger.showSnackBar(
+                          SnackBar(
+                            content:
+                                Text('Filters applied: ${result.toString()}'),
+                            duration: const Duration(seconds: 4),
+                          ),
+                        );
+                      }
+                    },
+                    icon: const Icon(Icons.filter_list),
+                    label: const Text('Modal Bottom Sheet'),
+                  ),
 
-              const SizedBox(height: 16),
-              const Divider(),
-              const SizedBox(height: 8),
+                  const SizedBox(height: 16),
+                  const Divider(),
+                  const SizedBox(height: 8),
 
-              // ─── Side Sheets ───
-              Text(
-                'Side Sheets',
-                style: Theme.of(context).textTheme.headlineSmall,
+                  // ─── Side Sheets ───
+                  Text(
+                    'Side Sheets',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  const SizedBox(height: 8),
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      final messenger = ScaffoldMessenger.of(context);
+                      final userProfile = await _showStandardSideSheet(context);
+                      if (userProfile != null) {
+                        messenger.showSnackBar(
+                          SnackBar(
+                            content: Text(
+                                'Filters applied: ${userProfile.toString()}'),
+                            duration: const Duration(seconds: 4),
+                          ),
+                        );
+                      }
+                    },
+                    icon: const Icon(Icons.view_sidebar),
+                    label: const Text('Standard Side Sheet'),
+                  ),
+                  const SizedBox(height: 8),
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      final messenger = ScaffoldMessenger.of(context);
+                      final result = await _showModalSideSheet(context);
+                      if (result != null && result != 'Cancel') {
+                        messenger.showSnackBar(SnackBar(content: Text(result)));
+                      }
+                    },
+                    icon: const Icon(Icons.view_sidebar_outlined),
+                    label: const Text('Modal Side Sheet'),
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
-              ElevatedButton.icon(
-                onPressed: () async {
-                  final messenger = ScaffoldMessenger.of(context);
-                  final userProfile = await _showStandardSideSheet(context);
-                  if (userProfile != null) {
-                    messenger.showSnackBar(
-                      SnackBar(
-                        content: Text('Filters applied: ${userProfile.toString()}'),
-                        duration: const Duration(seconds: 4),
-                      ),
-                    );
-                  }
-                },
-                icon: const Icon(Icons.view_sidebar),
-                label: const Text('Standard Side Sheet'),
-              ),
-              const SizedBox(height: 8),
-              ElevatedButton.icon(
-                onPressed: () async {
-                  final messenger = ScaffoldMessenger.of(context);
-                  final result = await _showModalSideSheet(context);
-                  if (result != null && result != 'Cancel') {
-                    messenger.showSnackBar(SnackBar(content: Text(result)));
-                  }
-                },
-                icon: const Icon(Icons.view_sidebar_outlined),
-                label: const Text('Modal Side Sheet'),
-              ),
-            ],
+            ),
           ),
-        ),
+          // For mobile screens: add swipe-up draggable bottom sheet
+          if (isMobile)
+            DraggableScrollableSheet(
+              initialChildSize: 0.05, // Start minimized (5% of screen)
+              minChildSize: 0.05, // Minimum size
+              maxChildSize:
+                  0.9, // Maximum size when expanded (increased for better content fit)
+              snap: true,
+              snapSizes: const [0.05, 0.9],
+              builder: (context, scrollController) {
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(16),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withAlpha(25),
+                        blurRadius: 8,
+                        offset: const Offset(0, -2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      // Drag handle indicator
+                      Container(
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurfaceVariant
+                              .withAlpha(102),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      // Sheet content - Fixed overflow with proper scrolling
+                      Expanded(
+                        child: SingleChildScrollView(
+                          controller: scrollController,
+                          child: const FilterOptionsModalBottomSheet(),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+        ],
       ),
     );
   }
@@ -229,7 +294,7 @@ class DialogsSheetsScreen extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
-      builder: (context) => const ModalBottomSheetContent(),
+      builder: (context) => const FilterOptionsModalBottomSheet(),
     );
   }
 
@@ -254,7 +319,7 @@ class DialogsSheetsScreen extends StatelessWidget {
               parent: animation,
               curve: Curves.easeInOut,
             )),
-            child: const StandardSideSheet(),
+            child: const ProductFiltersSheet(),
           ),
         );
       },
@@ -281,7 +346,7 @@ class DialogsSheetsScreen extends StatelessWidget {
               parent: animation,
               curve: Curves.easeInOut,
             )),
-            child: const ModalSideSheet(),
+            child: const TaskEditorModalSheet(),
           ),
         );
       },

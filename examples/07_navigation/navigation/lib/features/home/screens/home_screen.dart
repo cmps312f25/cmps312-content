@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:navigation/core/widgets/nav_drawer.dart';
+import 'package:navigation/app/widgets/nav_drawer.dart';
 
 /// Home screen - Landing page of the application
 /// Demonstrates basic screen structure with AppBar and Drawer
