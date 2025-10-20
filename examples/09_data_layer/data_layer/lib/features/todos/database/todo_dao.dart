@@ -42,7 +42,15 @@ abstract class TodoDao {
   ''')
   Future<List<Todo>> searchTodosByDescription(String searchQuery);
 
-  // Search todos by description and type - requires both filters
+  // Search todos by type only - exact match
+  @Query('''
+    SELECT * FROM todo 
+    WHERE type = :typeFilter
+    ORDER BY createdAt DESC
+  ''')
+  Future<List<Todo>> searchTodosByType(String typeFilter);
+
+  // Search todos by description and type - combined filters
   @Query('''
     SELECT * FROM todo 
     WHERE description LIKE '%' || :searchQuery || '%'

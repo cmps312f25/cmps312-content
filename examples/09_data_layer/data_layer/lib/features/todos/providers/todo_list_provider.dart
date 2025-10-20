@@ -57,7 +57,7 @@ class TodoListNotifier extends AsyncNotifier<List<Todo>> {
     ]);
   }
 
-  Future<void> remove(String id) async {
+  Future<void> delete(String id) async {
     final repository = ref.read(todoRepositoryProvider);
     await repository.deleteTodo(id);
 

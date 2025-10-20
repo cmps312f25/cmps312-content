@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:data_layer/features/todos/models/todo.dart';
 import 'package:data_layer/features/todos/providers/filtered_todos_provider.dart';
 import 'package:data_layer/features/todos/providers/search_provider.dart';
-import 'package:data_layer/features/todos/widgets/add_todo_field.dart';
+import 'package:data_layer/features/todos/widgets/todo_editor.dart';
 import 'package:data_layer/features/todos/widgets/todo_tile.dart';
 import 'package:data_layer/features/todos/widgets/todo_toolbar.dart';
 
@@ -13,45 +13,64 @@ class TodoListScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final todosAsync = ref.watch(filteredTodosProvider);
-    final typeFilter = ref.watch(searchTypeFilterProvider);
+    final typeFilter = ref.watch(typeFilterProvider);
+    final searchQuery = ref.watch(searchQueryProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Todo List'),
+        title: SearchBar(
+          hintText: 'Search todos...',
+          leading: const Icon(Icons.search),
+          trailing: searchQuery.isNotEmpty
+              ? [
+                  IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: () =>
+                        ref.read(searchQueryProvider.notifier).clear(),
+                  ),
+                ]
+              : null,
+          onChanged: (value) =>
+              ref.read(searchQueryProvider.notifier).setQuery(value),
+          elevation: const WidgetStatePropertyAll(0),
+          backgroundColor: const WidgetStatePropertyAll(Colors.white24),
+          hintStyle: const WidgetStatePropertyAll(
+            TextStyle(color: Colors.white70),
+          ),
+          textStyle: const WidgetStatePropertyAll(
+            TextStyle(color: Colors.white),
+          ),
+          side: const WidgetStatePropertyAll(BorderSide(color: Colors.white70)),
+        ),
         backgroundColor: const Color(0xFF5E35B1), // Deep Purple 600
-        foregroundColor: Colors.white,
-        // Search actions in app bar for easy access
         actions: [
-          // Type filter dropdown - filters todos by category
-          PopupMenuButton<String?>(
+          // Type filter dropdown
+          PopupMenuButton<String>(
             icon: Icon(
               Icons.filter_list,
-              color: typeFilter != null ? Colors.amber : Colors.white,
+              color: typeFilter != null && typeFilter.isNotEmpty
+                  ? Colors.amber
+                  : Colors.white,
             ),
             tooltip: 'Filter by type',
             onSelected: (value) {
-              // Use notifier method for type-safe state updates
-              ref.read(searchTypeFilterProvider.notifier).setFilter(value);
+              ref
+                  .read(typeFilterProvider.notifier)
+                  .setFilter(value.isEmpty ? null : value);
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(value: null, child: Text('All Types')),
+              const PopupMenuItem(value: '', child: Text('All Types')),
               ...TodoType.values.map(
                 (type) =>
                     PopupMenuItem(value: type.name, child: Text(type.title)),
               ),
             ],
           ),
-          // Search button opens search bar
-          IconButton(
-            icon: const Icon(Icons.search),
-            tooltip: 'Search todos',
-            onPressed: () => _showSearchBar(context, ref),
-          ),
         ],
       ),
       body: Column(
         children: [
-          const AddTodoField(),
+          const TodoEditor(),
           const TodoToolbar(),
           const Divider(height: 1),
           Expanded(
@@ -80,43 +99,6 @@ class TodoListScreen extends ConsumerWidget {
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Show search bar using showSearch with custom delegate
-  void _showSearchBar(BuildContext context, WidgetRef ref) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Search Todos'),
-        content: TextField(
-          autofocus: true,
-          decoration: const InputDecoration(
-            hintText: 'Enter search query...',
-            prefixIcon: Icon(Icons.search),
-            border: OutlineInputBorder(),
-          ),
-          onChanged: (value) {
-            // Update search query on every keystroke
-            // Provider watches this and triggers database search
-            ref.read(searchQueryProvider.notifier).setQuery(value);
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              // Clear search when closing
-              ref.read(searchQueryProvider.notifier).clear();
-              Navigator.pop(context);
-            },
-            child: const Text('Clear & Close'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
           ),
         ],
       ),

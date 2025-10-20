@@ -12,15 +12,15 @@ class FilteredTodosNotifier extends AsyncNotifier<List<Todo>> {
   Future<List<Todo>> build() async {
     // Watch all filter criteria - rebuilds when any changes
     final searchQuery = ref.watch(searchQueryProvider);
-    final typeFilter = ref.watch(searchTypeFilterProvider);
+    final typeFilter = ref.watch(typeFilterProvider);
     final completionFilter = ref.watch(todoFilterProvider);
 
     final repository = ref.watch(todoRepositoryProvider);
 
     // Perform database search with type filter
     final todos = await repository.searchTodos(
-      searchQuery: searchQuery,
-      typeFilter: typeFilter,
+      searchQuery: searchQuery.trim(),
+      typeFilter: typeFilter?.trim(),
     );
 
     // Apply completion filter (all/pending/completed)

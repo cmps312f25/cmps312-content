@@ -223,6 +223,18 @@ class _$TodoDao extends TodoDao {
   }
 
   @override
+  Future<List<Todo>> searchTodosByType(String typeFilter) async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM todo      WHERE type = ?1     ORDER BY createdAt DESC',
+        mapper: (Map<String, Object?> row) => Todo(
+            id: row['id'] as String,
+            description: row['description'] as String,
+            completed: (row['completed'] as int) != 0,
+            type: _todoTypeConverter.decode(row['type'] as String)),
+        arguments: [typeFilter]);
+  }
+
+  @override
   Future<List<Todo>> searchTodosByDescriptionAndType(
     String searchQuery,
     String typeFilter,

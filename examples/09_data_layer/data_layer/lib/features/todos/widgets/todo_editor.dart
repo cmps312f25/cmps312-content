@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:data_layer/features/todos/providers/todo_list_provider.dart';
 
 // Simple stateless input field for adding todos
-class AddTodoField extends ConsumerWidget {
-  const AddTodoField({super.key});
+class TodoEditor extends ConsumerWidget {
+  const TodoEditor({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

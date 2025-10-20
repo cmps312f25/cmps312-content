@@ -125,7 +125,7 @@ class TodoTile extends ConsumerWidget {
           ),
           FilledButton(
             onPressed: () async {
-              await ref.read(todoListProvider.notifier).remove(todo.id);
+              await ref.read(todoListProvider.notifier).delete(todo.id);
               // Refresh filtered list after delete
               ref.read(filteredTodosProvider.notifier).refresh();
               if (context.mounted) Navigator.pop(context);
