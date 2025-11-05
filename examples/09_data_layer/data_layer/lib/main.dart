@@ -13,7 +13,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return ProviderScope(
       child: MaterialApp.router(
-        title: 'State Management Demo',
+        title: 'Data Layer Demo',
         theme: ThemeData(primarySwatch: Colors.blue),
         debugShowCheckedModeBanner: false,
         routerConfig: router,
@@ -21,3 +21,5 @@ class App extends StatelessWidget {
     );
   }
 }
+
+

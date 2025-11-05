@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:data_layer/features/products/screens/products_screen.dart';
 import 'package:data_layer/features/todos/screens/todo_screen.dart';
+import 'package:data_layer/features/pets/screens/pets_screen.dart';
 import 'package:data_layer/app/main_scaffold.dart';
 
 /// App router configuration using GoRouter with ShellRoute
@@ -20,6 +21,11 @@ final GoRouter router = GoRouter(
           path: '/products',
           name: 'products',
           builder: (context, state) => const ProductsScreen(),
+        ),
+        GoRoute(
+          path: '/pets',
+          name: 'pets',
+          builder: (context, state) => const PetsScreen(),
         ),
       ],
     ),

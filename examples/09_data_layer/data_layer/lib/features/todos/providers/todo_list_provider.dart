@@ -1,72 +1,70 @@
+import 'package:data_layer/features/todos/providers/todo_repository_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:data_layer/features/todos/models/todo.dart';
-import 'package:data_layer/features/todos/providers/database_provider.dart';
+import 'package:data_layer/features/todos/providers/filtered_todos_provider.dart';
 import 'package:uuid/uuid.dart';
 
-/// AsyncNotifier for todos with database persistence.
-/// Simple approach: load from database, manage in memory, persist changes.
-class TodoListNotifier extends AsyncNotifier<List<Todo>> {
+/// Notifier for todo mutations (add, edit, toggle, delete).
+/// Does NOT cache todos in memory - delegates display to FilteredTodosNotifier.
+/// Performance benefit: Avoids loading all todos when dealing with large datasets.
+class TodoListNotifier extends Notifier<void> {
   static const _uuid = Uuid();
 
   @override
-  Future<List<Todo>> build() async {
-    final repository = ref.watch(todoRepositoryProvider);
-    return await repository.getAllTodos();
+  void build() {
+    // No initial state - this is a mutation-only provider
   }
 
   Future<void> add(
     String description, {
     TodoType type = TodoType.personal,
   }) async {
-    final repository = ref.read(todoRepositoryProvider);
+    final repository = await ref.read(todoRepositoryProvider.future);
     final newTodo = Todo(id: _uuid.v4(), description: description, type: type);
 
     await repository.addTodo(newTodo);
 
-    // Update state optimistically
-    state = AsyncValue.data([...state.value ?? [], newTodo]);
+    // Trigger refresh of filtered todos
+    ref.read(filteredTodosProvider.notifier).refresh();
   }
 
   Future<void> toggle(String id) async {
-    final repository = ref.read(todoRepositoryProvider);
-    final todos = state.value ?? [];
-    final todo = todos.firstWhere((t) => t.id == id);
+    final repository = await ref.read(todoRepositoryProvider.future);
+
+    // Fetch only the specific todo from database
+    final todo = await repository.getTodoById(id);
+    if (todo == null) return;
 
     final updatedTodo = todo.copyWith(completed: !todo.completed);
     await repository.updateTodo(updatedTodo);
 
-    // Update state
-    state = AsyncValue.data([
-      for (final t in todos)
-        if (t.id == id) updatedTodo else t,
-    ]);
+    // Trigger refresh of filtered todos
+    ref.read(filteredTodosProvider.notifier).refresh();
   }
 
   Future<void> edit({required String id, required String description}) async {
-    final repository = ref.read(todoRepositoryProvider);
-    final todos = state.value ?? [];
-    final todo = todos.firstWhere((t) => t.id == id);
+    final repository = await ref.read(todoRepositoryProvider.future);
+
+    // Fetch only the specific todo from database
+    final todo = await repository.getTodoById(id);
+    if (todo == null) return;
 
     final updatedTodo = todo.copyWith(description: description);
     await repository.updateTodo(updatedTodo);
 
-    // Update state
-    state = AsyncValue.data([
-      for (final t in todos)
-        if (t.id == id) updatedTodo else t,
-    ]);
+    // Trigger refresh of filtered todos
+    ref.read(filteredTodosProvider.notifier).refresh();
   }
 
   Future<void> delete(String id) async {
-    final repository = ref.read(todoRepositoryProvider);
+    final repository = await ref.read(todoRepositoryProvider.future);
     await repository.deleteTodo(id);
 
-    // Update state
-    final todos = state.value ?? [];
-    state = AsyncValue.data(todos.where((t) => t.id != id).toList());
+    // Trigger refresh of filtered todos
+    ref.read(filteredTodosProvider.notifier).refresh();
   }
 }
 
-final todoListProvider = AsyncNotifierProvider<TodoListNotifier, List<Todo>>(
+final todoListProvider = NotifierProvider<TodoListNotifier, void>(
   () => TodoListNotifier(),
 );

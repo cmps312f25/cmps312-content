@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:data_layer/features/todos/providers/todo_stats_provider.dart';
 
 /// Navigation configuration for app routes
 /// Centralizes route metadata for consistent navigation UI
@@ -31,6 +30,14 @@ class AppRoutes {
     color: Color(0xFF5E35B1), // Deep Purple 600
   );
 
+  static const pets = AppRoute(
+    path: '/pets',
+    name: 'pets',
+    icon: Icons.pets,
+    label: 'Pets',
+    color: Color(0xFFE64A19), // Deep Orange 700
+  );
+
   static const products = AppRoute(
     path: '/products',
     name: 'products',
@@ -40,7 +47,7 @@ class AppRoutes {
   );
 
   /// List of all routes for bottom navigation
-  static const List<AppRoute> all = [todo, products];
+  static const List<AppRoute> all = [todo, pets, products];
 }
 
 /// Main scaffold with bottom navigation bar
@@ -53,7 +60,6 @@ class MainScaffold extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentPath = GoRouterState.of(context).matchedLocation;
-    final pendingCount = ref.watch(pendingTodosCountProvider);
 
     return Scaffold(
       body: child,
@@ -71,14 +77,7 @@ class MainScaffold extends ConsumerWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Add badge for todo route
-                    if (route.path == '/todo' && pendingCount > 0)
-                      Badge(
-                        label: Text('$pendingCount'),
-                        child: Icon(route.icon, color: color, size: 24),
-                      )
-                    else
-                      Icon(route.icon, color: color, size: 24),
+                    Icon(route.icon, color: color, size: 24),
                     const SizedBox(height: 4),
                     Text(
                       route.label,

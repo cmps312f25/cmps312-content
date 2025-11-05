@@ -38,8 +38,11 @@ class Todo {
            createdAt?.millisecondsSinceEpoch ??
            DateTime.now().millisecondsSinceEpoch;
 
-  // Copy with method for immutable updates
-  Todo copyWith({
+  // Copy with method for immutable updates. Needed for state management libraries such as Riverpod.
+  // The Todo class uses final fields, making instances immutable (cannot be changed after creation)
+  // e.g., Mark toDo as completed - Only specify fields you want to change
+  // final completedTodo = todo.copyWith(completed: true);
+    Todo copyWith({
     String? id,
     String? description,
     bool? completed,

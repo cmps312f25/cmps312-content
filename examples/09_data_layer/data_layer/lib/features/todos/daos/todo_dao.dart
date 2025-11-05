@@ -4,10 +4,10 @@ import 'package:data_layer/features/todos/models/todo.dart';
 @dao
 abstract class TodoDao {
   @Query('SELECT * FROM todo ORDER BY createdAt DESC')
-  Future<List<Todo>> getAllTodos();
+  Future<List<Todo>> getTodos();
 
   @Query('SELECT * FROM todo ORDER BY createdAt DESC')
-  Stream<List<Todo>> watchAllTodos();
+  Stream<List<Todo>> observeTodos();
 
   @Query('SELECT * FROM todo WHERE id = :id')
   Future<Todo?> getTodoById(String id);
@@ -31,34 +31,21 @@ abstract class TodoDao {
   Future<void> deleteAllTodos();
 
   @Query('SELECT COUNT(*) FROM todo')
-  Future<int?> getTodoCount();
+  Future<int?> getTodosCount();
 
-  // Search todos by description only - simple LIKE query
-  // Uses SQL LIKE with % wildcards for case-insensitive partial matches
+  // Flexible search query that handles empty/null filters using OR conditions
+  // Empty string ('') means skip this filter
+  // -1 means skip completion filter (since completed is 0 or 1)
   @Query('''
     SELECT * FROM todo 
-    WHERE description LIKE '%' || :searchQuery || '%'
+    WHERE (:searchQuery = '' OR description LIKE '%' || :searchQuery || '%')
+    AND (:typeFilter = '' OR type = :typeFilter)
+    AND (:completedFilter = -1 OR completed = :completedFilter)
     ORDER BY createdAt DESC
   ''')
-  Future<List<Todo>> searchTodosByDescription(String searchQuery);
-
-  // Search todos by type only - exact match
-  @Query('''
-    SELECT * FROM todo 
-    WHERE type = :typeFilter
-    ORDER BY createdAt DESC
-  ''')
-  Future<List<Todo>> searchTodosByType(String typeFilter);
-
-  // Search todos by description and type - combined filters
-  @Query('''
-    SELECT * FROM todo 
-    WHERE description LIKE '%' || :searchQuery || '%'
-    AND type = :typeFilter
-    ORDER BY createdAt DESC
-  ''')
-  Future<List<Todo>> searchTodosByDescriptionAndType(
+  Future<List<Todo>> searchTodos(
     String searchQuery,
     String typeFilter,
+    int completedFilter,
   );
 }

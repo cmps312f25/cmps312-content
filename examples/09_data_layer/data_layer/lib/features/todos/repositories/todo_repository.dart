@@ -1,5 +1,6 @@
 import 'package:data_layer/features/todos/models/todo.dart';
-import 'package:data_layer/features/todos/database/todo_dao.dart';
+import 'package:data_layer/features/todos/daos/todo_dao.dart';
+import 'package:data_layer/features/todos/providers/status_filter_provider.dart';
 import 'package:uuid/uuid.dart';
 
 class TodoRepository {
@@ -9,9 +10,9 @@ class TodoRepository {
   TodoRepository(this._todoDao);
 
   // CRUD operations using Floor DAO
-  Future<List<Todo>> getAllTodos() => _todoDao.getAllTodos();
+  Future<List<Todo>> getTodos() => _todoDao.getTodos();
 
-  Stream<List<Todo>> watchAllTodos() => _todoDao.watchAllTodos();
+  Stream<List<Todo>> observeTodos() => _todoDao.observeTodos();
 
   Future<Todo?> getTodoById(String id) => _todoDao.getTodoById(id);
 
@@ -23,43 +24,37 @@ class TodoRepository {
 
   Future<void> deleteAllTodos() => _todoDao.deleteAllTodos();
 
-  Future<int> getTodoCount() async {
-    return await _todoDao.getTodoCount() ?? 0;
+  Future<int> getTodosCount() async {
+    return await _todoDao.getTodosCount() ?? 0;
   }
 
-  // Search todos at database level - delegates to appropriate DAO method
+  // Search todos at database level with flexible filtering
+  // Pass null/empty for filters you don't want to apply
+  // The SQL query handles empty filters using OR conditions
   Future<List<Todo>> searchTodos({
-    String searchQuery = '',
+    String? searchQuery,
     String? typeFilter,
+    TodoStatus statusFilter = TodoStatus.pending,
   }) {
-    final query = searchQuery.trim();
-    final type = typeFilter?.trim();
+    // Use empty string ('') for null/empty filters
+    // Use -1 for null completion filter (since 0=false, 1=true)
+    final query = searchQuery?.trim() ?? '';
+    final type = typeFilter?.trim() ?? '';
 
-    final hasQuery = query.isNotEmpty;
-    final hasType = type != null && type.isNotEmpty;
+    
+    // Convert completion filter to nullable bool for database query
+    final int completedFilter = switch (statusFilter) {
+      TodoStatus.all => -1, // No filter
+      TodoStatus.pending => 0, // Only incomplete todos
+      TodoStatus.completed => 1, // Only completed todos
+    };
 
-    // Both filters active
-    if (hasQuery && hasType) {
-      return _todoDao.searchTodosByDescriptionAndType(query, type);
-    }
-
-    // Type filter only
-    if (hasType) {
-      return _todoDao.searchTodosByType(type);
-    }
-
-    // Search query only
-    if (hasQuery) {
-      return _todoDao.searchTodosByDescription(query);
-    }
-
-    // No filters - return all
-    return getAllTodos();
+    return _todoDao.searchTodos(query, type, completedFilter);
   }
 
   // Initialize with test data if database is empty
   Future<void> initializeWithTestData() async {
-    final count = await getTodoCount();
+    final count = await getTodosCount();
     if (count == 0) {
       final testTodos = [
         Todo(

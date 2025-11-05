@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:data_layer/features/todos/providers/todo_filter_provider.dart';
+import 'package:data_layer/features/todos/providers/status_filter_provider.dart';
 import 'package:data_layer/features/todos/providers/todo_stats_provider.dart';
 
 class TodoToolbar extends ConsumerWidget {
@@ -8,7 +8,8 @@ class TodoToolbar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final filter = ref.watch(todoFilterProvider);
+    final selectedStatusFilter = ref.watch(statusFilterProvider);
+    final todosCount = ref.watch(todosCountProvider);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -18,21 +19,21 @@ class TodoToolbar extends ConsumerWidget {
         children: [
           _buildButton(
             ref,
-            TodoFilter.all,
-            filter,
-            ref.watch(totalTodosCountProvider),
+            TodoStatus.pending,
+            selectedStatusFilter,
+            todosCount,
           ),
           _buildButton(
             ref,
-            TodoFilter.pending,
-            filter,
-            ref.watch(pendingTodosCountProvider),
+            TodoStatus.completed,
+            selectedStatusFilter,
+            todosCount,
           ),
           _buildButton(
             ref,
-            TodoFilter.completed,
-            filter,
-            ref.watch(completedTodosCountProvider),
+            TodoStatus.all,
+            selectedStatusFilter,
+            todosCount,
           ),
         ],
       ),
@@ -41,19 +42,22 @@ class TodoToolbar extends ConsumerWidget {
 
   Widget _buildButton(
     WidgetRef ref,
-    TodoFilter type,
-    TodoFilter current,
+    TodoStatus statusFilter,
+    TodoStatus selectedStatusFilter,
     int count,
   ) {
-    final isActive = type == current;
+    final isActive = statusFilter == selectedStatusFilter;
     return TextButton(
-      onPressed: () => ref.read(todoFilterProvider.notifier).setFilter(type),
+      onPressed: () =>
+          ref.read(statusFilterProvider.notifier).setFilter(statusFilter),
       style: TextButton.styleFrom(
         foregroundColor: isActive ? Colors.purple : Colors.grey.shade700,
         backgroundColor: isActive ? Colors.purple.shade50 : null,
       ),
       child: Text(
-        '${type.displayName} ($count)',
+        isActive
+            ? '${statusFilter.displayName} ($count)'
+            : statusFilter.displayName,
         style: TextStyle(fontWeight: isActive ? FontWeight.bold : null),
       ),
     );

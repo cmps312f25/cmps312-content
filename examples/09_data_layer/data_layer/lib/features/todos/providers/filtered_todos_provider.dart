@@ -1,8 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:data_layer/features/todos/models/todo.dart';
-import 'package:data_layer/features/todos/providers/database_provider.dart';
-import 'package:data_layer/features/todos/providers/todo_filter_provider.dart';
-import 'package:data_layer/features/todos/providers/search_provider.dart';
+import 'package:data_layer/features/todos/providers/status_filter_provider.dart';
+import 'package:data_layer/features/todos/providers/search_query_provider.dart';
+import 'package:data_layer/features/todos/providers/type_filter_provider.dart';
+import 'package:data_layer/features/todos/providers/todo_repository_provider.dart';
 
 /// AsyncNotifier that performs database-level filtering
 /// Combines search query, type filter, and completion status filter
@@ -13,28 +14,24 @@ class FilteredTodosNotifier extends AsyncNotifier<List<Todo>> {
     // Watch all filter criteria - rebuilds when any changes
     final searchQuery = ref.watch(searchQueryProvider);
     final typeFilter = ref.watch(typeFilterProvider);
-    final completionFilter = ref.watch(todoFilterProvider);
+    final statusFilter = ref.watch(statusFilterProvider);
 
-    final repository = ref.watch(todoRepositoryProvider);
+    final todoRepository = await ref.watch(todoRepositoryProvider.future);
 
-    // Perform database search with type filter
-    final todos = await repository.searchTodos(
-      searchQuery: searchQuery.trim(),
-      typeFilter: typeFilter?.trim(),
+    // Perform database search with all filters
+    // Empty/null filters are ignored by the SQL query
+    return await todoRepository.searchTodos(
+      searchQuery: searchQuery,
+      typeFilter: typeFilter,
+      statusFilter: statusFilter,
     );
-
-    // Apply completion filter (all/pending/completed)
-    // This is done client-side as it's a simple boolean check
-    return switch (completionFilter) {
-      TodoFilter.all => todos,
-      TodoFilter.pending => todos.where((todo) => !todo.completed).toList(),
-      TodoFilter.completed => todos.where((todo) => todo.completed).toList(),
-    };
   }
 
   // Refresh data - useful after updates/deletes
   Future<void> refresh() async {
     state = const AsyncValue.loading();
+    // Re-run build to fetch fresh data and update state
+    // .guard handles errors and sets state accordingly
     state = await AsyncValue.guard(() => build());
   }
 }

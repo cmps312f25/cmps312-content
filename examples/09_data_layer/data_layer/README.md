@@ -1,2 +1,2 @@
 # data_layer
-State management examples.
+Data layer examples.

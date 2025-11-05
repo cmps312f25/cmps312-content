@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:data_layer/features/todos/models/todo.dart';
 import 'package:data_layer/features/todos/providers/filtered_todos_provider.dart';
-import 'package:data_layer/features/todos/providers/search_provider.dart';
+import 'package:data_layer/features/todos/providers/search_query_provider.dart';
+import 'package:data_layer/features/todos/providers/type_filter_provider.dart';
 import 'package:data_layer/features/todos/widgets/todo_editor.dart';
 import 'package:data_layer/features/todos/widgets/todo_tile.dart';
 import 'package:data_layer/features/todos/widgets/todo_toolbar.dart';
@@ -32,8 +33,18 @@ class TodoListScreen extends ConsumerWidget {
               : null,
           onChanged: (value) =>
               ref.read(searchQueryProvider.notifier).setQuery(value),
+          // Styling using WidgetStatePropertyAll to apply the
+          // same value across all widget states (e.g., focused, hovered, disabled, selected, etc.)
           elevation: const WidgetStatePropertyAll(0),
-          backgroundColor: const WidgetStatePropertyAll(Colors.white24),
+          // State-specific values (when you need different styles per state)
+          // backgroundColor: const WidgetStatePropertyAll(Colors.white24),
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.focused)) {
+              return Colors.deepPurple.shade200; // Light deep purple tone;
+            }
+            if (states.contains(WidgetState.hovered)) return Colors.amberAccent;
+            return Colors.white24; // Default
+          }),
           hintStyle: const WidgetStatePropertyAll(
             TextStyle(color: Colors.white70),
           ),
