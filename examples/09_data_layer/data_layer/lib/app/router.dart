@@ -1,5 +1,4 @@
 import 'package:go_router/go_router.dart';
-import 'package:data_layer/features/products/screens/products_screen.dart';
 import 'package:data_layer/features/todos/screens/todo_screen.dart';
 import 'package:data_layer/features/pets/screens/pets_screen.dart';
 import 'package:data_layer/app/main_scaffold.dart';
@@ -16,11 +15,6 @@ final GoRouter router = GoRouter(
           path: '/todo',
           name: 'todo',
           builder: (context, state) => const TodoListScreen(),
-        ),
-        GoRoute(
-          path: '/products',
-          name: 'products',
-          builder: (context, state) => const ProductsScreen(),
         ),
         GoRoute(
           path: '/pets',

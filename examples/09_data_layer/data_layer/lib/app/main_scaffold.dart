@@ -38,16 +38,8 @@ class AppRoutes {
     color: Color(0xFFE64A19), // Deep Orange 700
   );
 
-  static const products = AppRoute(
-    path: '/products',
-    name: 'products',
-    icon: Icons.shopping_cart,
-    label: 'Products',
-    color: Color(0xFF00897B), // Teal 600
-  );
-
   /// List of all routes for bottom navigation
-  static const List<AppRoute> all = [todo, pets, products];
+  static const List<AppRoute> all = [todo, pets];
 }
 
 /// Main scaffold with bottom navigation bar
