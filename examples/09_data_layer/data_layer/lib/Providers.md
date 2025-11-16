@@ -5,41 +5,291 @@ This project uses **Riverpod** for state management with a layered architecture:
 
 ## Provider Communication Flow
 
+### Architecture Layers - Two Reactive Data Flow Paths
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│                            UI Layer (ConsumerWidget)                                │
+└────────────┬────────────────────────────────────────────────────────┬────────────────┘
+             │                                                        │
+    ◄────────┴────────►                                      ◄────────┴────────►
+   REACTIVE SEARCH/FILTER                                   MUTATION WITH MANUAL
+    (Automatic Rebuild)                                      REFRESH (Explicit)
+             │                                                        │
+             │ User types in search                                  │ User deletes todo
+             │ ref.read().notifier.setQuery()                        │ ref.read().notifier.delete()
+             ↓                                                        ↓
+┌────────────────────────────────┐                    ┌────────────────────────────────┐
+│   State Notifier Updates       │                    │   Mutation Provider            │
+│   (NotifierProvider)           │                    │   (AsyncNotifierProvider)      │
+│                                │                    │                                │
+│ • searchQueryProvider          │                    │ • todoListProvider             │
+│ • typeFilterProvider           │                    │ • ownersProvider               │
+│ • statusFilterProvider         │                    │ • petsProvider                 │
+│ • selectedOwnerIdProvider      │                    │                                │
+│                                │                    │ Performs DB mutation           │
+│ state = "new value"            │                    │ (INSERT/UPDATE/DELETE)         │
+└────────────┬───────────────────┘                    └────────────┬───────────────────┘
+             │                                                     │
+             │ ref.watch() detects change                          │ Mutation complete
+             │ AUTOMATIC TRIGGER                                   │ Database updated
+             ↓                                                     │
+┌────────────────────────────────┐                                │
+│   Computed Provider Rebuilds   │                                │ Manual refresh needed
+│   (AsyncNotifierProvider)      │                                │ ref.read().notifier.refresh()
+│                                │                                │ or ref.invalidate()
+│ • filteredTodosProvider        │ ◄──────────────────────────────┤
+│                                │                                │
+│ @override                      │                                │
+│ Future<List<Todo>> build() {   │                                │
+│   // Watches state providers   │                                │
+│   final query = ref.watch(...) │                                │
+│   final filter = ref.watch(...)│                                │
+│                                │                                │
+│   // Fetches from repository   │                                │
+│   return repository.search()   │                                │
+│ }                              │                                │
+└────────────┬───────────────────┘                                │
+             │                                                     │
+             │ ref.watch() to get repository                       │
+             ↓                                                     │
+┌────────────────────────────────┐                                │
+│   Repository Provider          │                                │
+│   (FutureProvider)             │                                │
+│                                │                                │
+│ • todoRepositoryProvider       │ ◄──────────────────────────────┘
+│ • petRepositoryProvider        │    Also needs repository
+│                                │    for mutation operations
+│ Provides business logic        │
+│ & DAO abstraction              │
+└────────────┬───────────────────┘
+             │
+             │ ref.watch() to get database
+             ↓
+┌────────────────────────────────┐
+│   Database Provider            │
+│   (FutureProvider - Singleton) │
+│                                │
+│ • databaseProvider             │
+│                                │
+│ Single source of truth         │
+│ Initialized once, cached       │
+└────────────┬───────────────────┘
+             │
+             ↓
+       ┌──────────┐
+       │ SQLite DB │
+       └──────────┘
+```
+
+### Path Comparison
+
+| Aspect | Left Path (Search/Filter) | Right Path (Mutation) |
+|--------|---------------------------|------------------------|
+| **Trigger** | User input → State change | User action → DB mutation |
+| **Method** | `ref.read().notifier.setQuery()` | `ref.read().notifier.delete()` |
+| **Propagation** | ✅ Automatic via `ref.watch()` | ❌ Manual via `.refresh()` |
+| **Rebuild** | Computed provider rebuilds automatically | Requires explicit refresh call |
+| **Example** | Type "flutter" → filtered list updates | Delete todo → call `.refresh()` to update list |
+| **Code Pattern** | `ref.watch(filterProvider)` detects change | `await mutation(); ref.read().notifier.refresh()` |
+
+### Reactive Data Flow Cycle
+
+#### 1️⃣ User Interaction → State Update
+```dart
+// UI Layer: User types in search bar
+SearchBar(
+  onChanged: (value) => 
+    ref.read(searchQueryProvider.notifier).setQuery(value),
+    //    └─ ref.read() gets the notifier
+    //       └─ .notifier accesses the class methods
+    //          └─ .setQuery() updates internal state
+)
+```
+
+**Flow:**
+```
+User Input → ref.read(provider.notifier).method() → State Updated
+```
+
+#### 2️⃣ State Change → Automatic Rebuild
+```dart
+class FilteredTodosNotifier extends AsyncNotifier<List<Todo>> {
+  @override
+  Future<List<Todo>> build() async {
+    // 👀 Watching state - rebuilds when searchQueryProvider changes
+    final searchQuery = ref.watch(searchQueryProvider);
+    final typeFilter = ref.watch(typeFilterProvider);
+    final statusFilter = ref.watch(statusFilterProvider);
+    
+    // Get repository
+    final repository = await ref.watch(todoRepositoryProvider.future);
+    
+    // Query database with current filters
+    return await repository.searchTodos(
+      searchQuery: searchQuery,
+      typeFilter: typeFilter,
+      statusFilter: statusFilter,
+    );
+  }
+}
+```
+
+**Flow:**
+```
+searchQueryProvider state changes
+        ↓
+ref.watch() detects change
+        ↓
+filteredTodosProvider.build() called automatically
+        ↓
+New database query executed
+        ↓
+AsyncValue<List<Todo>> updated
+```
+
+#### 3️⃣ Computed Provider → Repository → Database
+```dart
+// Computed provider watches repository provider
+final repository = await ref.watch(todoRepositoryProvider.future);
+
+// Repository provider watches database provider
+final database = await ref.watch(databaseProvider.future);
+
+// Repository exposes DAO methods
+return TodoRepository(database.todoDao);
+```
+
+**Flow:**
+```
+filteredTodosProvider
+        ↓ ref.watch()
+todoRepositoryProvider
+        ↓ ref.watch()
+databaseProvider
+        ↓ provides
+TodoDAO → SQL Query → SQLite Database
+```
+
+#### 4️⃣ Data Update → UI Rebuild
+```dart
+// UI watches computed provider
+Widget build(BuildContext context, WidgetRef ref) {
+  final todosAsync = ref.watch(filteredTodosProvider);
+  //                      └─ ref.watch() listens for changes
+  
+  return todosAsync.when(
+    loading: () => CircularProgressIndicator(),
+    error: (e, st) => Text('Error: $e'),
+    data: (todos) => ListView.builder(
+      itemCount: todos.length,
+      itemBuilder: (_, i) => TodoTile(todos[i]),
+    ),
+  );
+}
+```
+
+**Flow:**
+```
+filteredTodosProvider state changes
+        ↓
+Widget rebuilds automatically (ref.watch detected change)
+        ↓
+.when() handles AsyncValue states
+        ↓
+UI displays new data
+```
+
+#### 5️⃣ Mutation → Manual Refresh Cycle
+```dart
+// User action: Delete todo
+onPressed: () async {
+  // Step 1: Perform mutation via notifier
+  await ref.read(todoListProvider.notifier).delete(todoId);
+  //        └─ ref.read() for one-time action (no listening)
+  
+  // Step 2: Manually trigger refresh of filtered data
+  ref.read(filteredTodosProvider.notifier).refresh();
+  //  └─ Calls build() again to fetch fresh data
+}
+```
+
+**Flow:**
+```
+User Action (Delete)
+        ↓
+ref.read().notifier.delete()
+        ↓
+Database mutation (DELETE query)
+        ↓
+ref.read().notifier.refresh()
+        ↓
+filteredTodosProvider.build() called
+        ↓
+New query fetches updated data
+        ↓
+UI automatically updates via ref.watch()
+```
+
+### Complete Example: Todo Search Flow
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     UI Layer (Widgets)                      │
-│  - ConsumerWidget watches providers                         │
-│  - Reads notifiers to update state                          │
-│  - Displays AsyncValue states (loading/data/error)          │
-└────────────────────┬────────────────────────────────────────┘
-                     │ ref.watch()
-┌────────────────────▼────────────────────────────────────────┐
-│              State Providers (Notifiers)                    │
-│  - Manage UI state (search, filters, selections)           │
-│  - Provide simple state updates                             │
-└────────────────────┬────────────────────────────────────────┘
-                     │ ref.watch()
-┌────────────────────▼────────────────────────────────────────┐
-│         Computed Providers (AsyncNotifier/Future)           │
-│  - Watch state providers and repository providers          │
-│  - Perform database queries with filters                    │
-│  - Return computed/filtered data                            │
-└────────────────────┬────────────────────────────────────────┘
-                     │ ref.watch()
-┌────────────────────▼────────────────────────────────────────┐
-│            Repository Providers (Future)                    │
-│  - Watch database provider                                  │
-│  - Provide business logic layer                             │
-│  - Expose DAOs through repositories                         │
-└────────────────────┬────────────────────────────────────────┘
-                     │ ref.watch()
-┌────────────────────▼────────────────────────────────────────┐
-│              Database Provider (Future)                     │
-│  - Single source of truth                                   │
-│  - Initialized once, cached for app lifetime                │
-│  - Provides DAOs to repositories                            │
+│ 1. User types "flutter" in SearchBar                        │
+└──────────────────┬──────────────────────────────────────────┘
+                   │
+┌──────────────────▼──────────────────────────────────────────┐
+│ 2. ref.read(searchQueryProvider.notifier).setQuery("flutter") │
+│    - SearchQueryNotifier.state = "flutter"                  │
+└──────────────────┬──────────────────────────────────────────┘
+                   │ State changed!
+┌──────────────────▼──────────────────────────────────────────┐
+│ 3. filteredTodosProvider.build() triggered automatically    │
+│    - ref.watch(searchQueryProvider) detects change          │
+│    - Reads new value: "flutter"                             │
+└──────────────────┬──────────────────────────────────────────┘
+                   │
+┌──────────────────▼──────────────────────────────────────────┐
+│ 4. Get repository: ref.watch(todoRepositoryProvider.future) │
+└──────────────────┬──────────────────────────────────────────┘
+                   │
+┌──────────────────▼──────────────────────────────────────────┐
+│ 5. Execute query: repository.searchTodos(                   │
+│      searchQuery: "flutter",                                │
+│      typeFilter: null,                                      │
+│      statusFilter: TodoStatus.all                           │
+│    )                                                        │
+└──────────────────┬──────────────────────────────────────────┘
+                   │
+┌──────────────────▼──────────────────────────────────────────┐
+│ 6. SQL Query: SELECT * FROM todo                            │
+│    WHERE description LIKE '%flutter%'                       │
+└──────────────────┬──────────────────────────────────────────┘
+                   │
+┌──────────────────▼──────────────────────────────────────────┐
+│ 7. Return List<Todo> with matching results                  │
+│    - state = AsyncValue.data([todo1, todo2, ...])           │
+└──────────────────┬──────────────────────────────────────────┘
+                   │
+┌──────────────────▼──────────────────────────────────────────┐
+│ 8. UI rebuilds automatically                                │
+│    - ref.watch(filteredTodosProvider) detected change       │
+│    - ListView displays filtered todos                       │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+### Key Differences: ref.watch vs ref.read
+
+| Aspect | `ref.watch()` | `ref.read()` |
+|--------|---------------|--------------|
+| **Purpose** | Listen to changes | One-time access |
+| **Rebuilds** | ✅ Triggers rebuild | ❌ No rebuild |
+| **Use in** | `build()` methods | Event handlers, callbacks |
+| **Example** | `final todos = ref.watch(todosProvider)` | `ref.read(provider.notifier).add()` |
+
+**Rule of Thumb:**
+- Use `ref.watch()` when you want to **display** data or **react** to changes
+- Use `ref.read()` when you want to **perform actions** (mutations, one-time operations)
 
 ## Provider Types Used
 
