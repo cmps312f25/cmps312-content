@@ -177,8 +177,6 @@ class PetsList extends ConsumerWidget {
     WidgetRef ref,
     Pet pet,
   ) async {
-    bool isDialogOpen = false;
-
     try {
       // Pick image using platform-aware service
       final imagePickerService = ref.read(imagePickerServiceProvider);
@@ -187,15 +185,13 @@ class PetsList extends ConsumerWidget {
       if (imageFile == null) return;
 
       // Show loading indicator
-      if (context.mounted) {
-        isDialogOpen = true;
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) =>
-              const Center(child: CircularProgressIndicator()),
-        );
-      }
+      if (!context.mounted) return;
+
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
 
       final repository = ref.read(petRepositoryProvider);
 
@@ -210,33 +206,42 @@ class PetsList extends ConsumerWidget {
       // Update pet with new image path
       await repository.updatePetImage(pet.id!, imagePath);
 
-      // Refresh pets list
+      // Close loading dialog first
+      if (context.mounted) {
+        context.pop();
+      }
+
+      // Then refresh pets list
       await ref.read(petsProvider.notifier).refreshPets();
 
-      // Close loading dialog and show success
-      if (context.mounted && isDialogOpen) {
-        context.pop(); // Use go_router's pop
-        isDialogOpen = false;
-
+      // Show success message
+      if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Image uploaded successfully!'),
             backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
           ),
         );
       }
     } catch (e) {
-      // Close loading dialog if open and show error
-      if (context.mounted && isDialogOpen) {
-        context.pop(); // Use go_router's pop
-        isDialogOpen = false;
+      // Close loading dialog if open
+      if (context.mounted) {
+        // Try to pop the dialog, but catch if it's not there
+        try {
+          context.pop();
+        } catch (_) {
+          // Dialog was already closed or never opened
+        }
       }
 
+      // Show error message
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error uploading image: $e'),
             backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
           ),
         );
       }
