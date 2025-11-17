@@ -45,5 +45,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs access to your photo library to upload pet images</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This app needs access to your camera to take pet photos</string>
 </dict>
 </plist>

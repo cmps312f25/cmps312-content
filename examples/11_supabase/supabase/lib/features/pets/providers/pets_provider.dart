@@ -34,6 +34,10 @@ class PetsNotifier extends AsyncNotifier<List<Pet>> {
     state = await AsyncValue.guard(() => build());
   }
 
+  Future<void> refreshPets() async {
+    await refresh();
+  }
+
   Future<void> addPet(String name, int ownerId) async {
     final repository = ref.read(petRepositoryProvider);
     await repository.addPet(Pet(name: name, ownerId: ownerId));

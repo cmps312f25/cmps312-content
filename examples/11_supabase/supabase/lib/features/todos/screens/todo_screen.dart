@@ -72,8 +72,9 @@ class TodoListScreen extends ConsumerWidget {
             itemBuilder: (context) => [
               const PopupMenuItem(value: '', child: Text('All Types')),
               ...TodoType.values.map(
+                // Use title (capitalized) to match database values
                 (type) =>
-                    PopupMenuItem(value: type.name, child: Text(type.title)),
+                    PopupMenuItem(value: type.title, child: Text(type.title)),
               ),
             ],
           ),

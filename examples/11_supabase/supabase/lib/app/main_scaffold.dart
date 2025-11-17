@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_app/features/auth/providers/auth_provider.dart';
 
 /// Navigation configuration for app routes
 /// Centralizes route metadata for consistent navigation UI
@@ -52,8 +53,78 @@ class MainScaffold extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentPath = GoRouterState.of(context).matchedLocation;
+    final authRepository = ref.read(authRepositoryProvider);
+    final userFullName = authRepository.userFullName ?? 'User';
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          AppRoutes.all
+              .firstWhere(
+                (r) => r.path == currentPath,
+                orElse: () => AppRoutes.todo,
+              )
+              .label,
+        ),
+        actions: [
+          // User info
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Center(
+              child: Text(
+                userFullName,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+          // Sign out button
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Sign Out',
+            onPressed: () async {
+              // Confirm sign out
+              final shouldSignOut = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Sign Out'),
+                  content: const Text('Are you sure you want to sign out?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: const Text('Cancel'),
+                    ),
+                    FilledButton(
+                      onPressed: () => Navigator.of(context).pop(true),
+                      child: const Text('Sign Out'),
+                    ),
+                  ],
+                ),
+              );
+
+              if (shouldSignOut == true && context.mounted) {
+                try {
+                  await authRepository.signOut();
+                  if (context.mounted) {
+                    context.go('/signin');
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Error signing out: $e'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                }
+              }
+            },
+          ),
+        ],
+      ),
       body: child,
       bottomNavigationBar: BottomAppBar(
         height: 60,

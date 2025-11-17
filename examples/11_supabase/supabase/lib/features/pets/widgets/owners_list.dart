@@ -61,7 +61,7 @@ class OwnersList extends ConsumerWidget {
         final owner = owners[index];
         final isSelected = selectedOwnerId == owner.id;
         return ListTile(
-          title: Text(owner.name),
+          title: Text(owner.fullName),
           selected: isSelected,
           selectedTileColor: Colors.teal.shade50,
           trailing: IconButton(
@@ -88,7 +88,7 @@ class OwnersList extends ConsumerWidget {
       builder: (context) => ConfirmDeleteDialog(
         title: 'Delete Owner',
         message:
-            'This will also delete all pets owned by ${owner.name}. Continue?',
+            'This will also delete all pets owned by ${owner.fullName}. Continue?',
       ),
     );
 

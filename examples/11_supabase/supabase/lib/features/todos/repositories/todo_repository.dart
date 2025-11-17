@@ -1,10 +1,8 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:supabase_app/features/todos/models/todo.dart';
 import 'package:supabase_app/features/todos/providers/status_filter_provider.dart';
-import 'package:uuid/uuid.dart';
 
 class TodoRepository {
-  static const _uuid = Uuid();
   final SupabaseClient _client;
 
   TodoRepository(this._client);
@@ -27,7 +25,7 @@ class TodoRepository {
         .map((data) => data.map((json) => Todo.fromJson(json)).toList());
   }
 
-  Future<Todo?> getTodoById(String id) async {
+  Future<Todo?> getTodoById(int id) async {
     final response = await _client
         .from('todos')
         .select()
@@ -41,15 +39,15 @@ class TodoRepository {
   }
 
   Future<void> updateTodo(Todo todo) async {
-    await _client.from('todos').update(todo.toJson()).eq('id', todo.id);
+    await _client.from('todos').update(todo.toJson()).eq('id', todo.id!);
   }
 
-  Future<void> deleteTodo(String id) async {
+  Future<void> deleteTodo(int id) async {
     await _client.from('todos').delete().eq('id', id);
   }
 
   Future<void> deleteAllTodos() async {
-    await _client.from('todos').delete().neq('id', '');
+    await _client.from('todos').delete().neq('id', 0);
   }
 
   Future<int> getTodosCount() async {
@@ -98,42 +96,5 @@ class TodoRepository {
 
     final response = await query.order('created_at', ascending: false);
     return (response as List).map((json) => Todo.fromJson(json)).toList();
-  }
-
-  // ==================== Initialization ====================
-
-  /// Initialize with test data if database is empty
-  Future<void> initializeWithTestData() async {
-    final count = await getTodosCount();
-    if (count == 0) {
-      final testTodos = [
-        Todo(
-          id: _uuid.v4(),
-          description: 'Learn Navigation',
-          type: TodoType.personal,
-        ),
-        Todo(
-          id: _uuid.v4(),
-          description: 'Practice state management using Riverpod',
-          type: TodoType.work,
-        ),
-        Todo(
-          id: _uuid.v4(),
-          description: 'Explore more widgets and layouts',
-          type: TodoType.personal,
-        ),
-        Todo(
-          id: _uuid.v4(),
-          description: 'Plan family vacation',
-          type: TodoType.family,
-          completed: true,
-        ),
-      ];
-
-      // Insert all todos
-      await _client
-          .from('todos')
-          .insert(testTodos.map((t) => t.toJson()).toList());
-    }
   }
 }

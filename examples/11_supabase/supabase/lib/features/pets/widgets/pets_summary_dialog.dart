@@ -27,7 +27,7 @@ class PetsSummaryDialog extends ConsumerWidget {
                 return ListTile(
                   leading: const Icon(Icons.pets),
                   title: Text(petOwner.petName),
-                  subtitle: Text('Owner: ${petOwner.ownerName}'),
+                  subtitle: Text('Owner: ${petOwner.ownerFullName}'),
                 );
               },
             );

@@ -16,7 +16,8 @@ class TodoTile extends ConsumerWidget {
       leading: Checkbox(
         value: todo.completed,
         onChanged: (_) async {
-          await ref.read(todoListProvider.notifier).toggle(todo.id);
+          // todo.id should never be null for existing todos
+          await ref.read(todoListProvider.notifier).toggle(todo.id!);
           // Refresh filtered list after toggle
           ref.read(filteredTodosProvider.notifier).refresh();
         },
@@ -98,7 +99,7 @@ class TodoTile extends ConsumerWidget {
               if (controller.text.trim().isNotEmpty) {
                 await ref
                     .read(todoListProvider.notifier)
-                    .edit(id: todo.id, description: controller.text.trim());
+                    .edit(id: todo.id!, description: controller.text.trim());
                 // Refresh filtered list after edit
                 ref.read(filteredTodosProvider.notifier).refresh();
                 if (context.mounted) Navigator.pop(context);
@@ -125,7 +126,7 @@ class TodoTile extends ConsumerWidget {
           ),
           FilledButton(
             onPressed: () async {
-              await ref.read(todoListProvider.notifier).delete(todo.id);
+              await ref.read(todoListProvider.notifier).delete(todo.id!);
               // Refresh filtered list after delete
               ref.read(filteredTodosProvider.notifier).refresh();
               if (context.mounted) Navigator.pop(context);

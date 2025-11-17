@@ -2,14 +2,12 @@ import 'package:supabase_app/features/todos/providers/todo_repository_provider.d
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_app/features/todos/models/todo.dart';
 import 'package:supabase_app/features/todos/providers/filtered_todos_provider.dart';
-import 'package:uuid/uuid.dart';
+import 'package:supabase_app/features/auth/providers/auth_provider.dart';
 
 /// Notifier for todo mutations (add, edit, toggle, delete).
 /// Does NOT cache todos in memory - delegates display to FilteredTodosNotifier.
 /// Performance benefit: Avoids loading all todos when dealing with large datasets.
 class TodoListNotifier extends Notifier<void> {
-  static const _uuid = Uuid();
-
   @override
   void build() {
     // No initial state - this is a mutation-only provider
@@ -20,7 +18,17 @@ class TodoListNotifier extends Notifier<void> {
     TodoType type = TodoType.personal,
   }) async {
     final repository = ref.read(todoRepositoryProvider);
-    final newTodo = Todo(id: _uuid.v4(), description: description, type: type);
+    final authRepository = ref.read(authRepositoryProvider);
+
+    // Get the current user's ID
+    final userId = authRepository.currentUser?.id;
+
+    // Create new todo with the current user's ID
+    final newTodo = Todo(
+      description: description,
+      type: type,
+      createdBy: userId,
+    );
 
     await repository.addTodo(newTodo);
 
@@ -28,7 +36,7 @@ class TodoListNotifier extends Notifier<void> {
     ref.read(filteredTodosProvider.notifier).refresh();
   }
 
-  Future<void> toggle(String id) async {
+  Future<void> toggle(int id) async {
     final repository = ref.read(todoRepositoryProvider);
 
     // Fetch only the specific todo from database
@@ -42,7 +50,7 @@ class TodoListNotifier extends Notifier<void> {
     ref.read(filteredTodosProvider.notifier).refresh();
   }
 
-  Future<void> edit({required String id, required String description}) async {
+  Future<void> edit({required int id, required String description}) async {
     final repository = ref.read(todoRepositoryProvider);
 
     // Fetch only the specific todo from database
@@ -56,7 +64,7 @@ class TodoListNotifier extends Notifier<void> {
     ref.read(filteredTodosProvider.notifier).refresh();
   }
 
-  Future<void> delete(String id) async {
+  Future<void> delete(int id) async {
     final repository = ref.read(todoRepositoryProvider);
     await repository.deleteTodo(id);
 

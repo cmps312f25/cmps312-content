@@ -8,26 +8,46 @@ class AddOwnerDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final controller = TextEditingController();
+    final firstNameController = TextEditingController();
+    final lastNameController = TextEditingController();
 
     return AlertDialog(
       title: const Text('Add Owner'),
-      content: TextField(
-        controller: controller,
-        decoration: const InputDecoration(
-          labelText: 'Owner Name',
-          border: OutlineInputBorder(),
-        ),
-        autofocus: true,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: firstNameController,
+            decoration: const InputDecoration(
+              labelText: 'First Name',
+              border: OutlineInputBorder(),
+            ),
+            autofocus: true,
+            textCapitalization: TextCapitalization.words,
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: lastNameController,
+            decoration: const InputDecoration(
+              labelText: 'Last Name',
+              border: OutlineInputBorder(),
+            ),
+            textCapitalization: TextCapitalization.words,
+          ),
+        ],
       ),
       actions: [
         TextButton(onPressed: () => context.pop(), child: const Text('Cancel')),
         FilledButton(
           onPressed: () async {
-            if (controller.text.trim().isNotEmpty) {
+            if (firstNameController.text.trim().isNotEmpty &&
+                lastNameController.text.trim().isNotEmpty) {
               await ref
                   .read(ownersProvider.notifier)
-                  .addOwner(controller.text.trim());
+                  .addOwner(
+                    firstNameController.text.trim(),
+                    lastNameController.text.trim(),
+                  );
               // Close the dialog
               // .mounted is checked to ensure the context is still valid
               if (context.mounted) context.pop();
