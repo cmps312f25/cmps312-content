@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:supabase_app/features/pets/models/pet.dart';
 import 'package:supabase_app/features/pets/providers/pets_provider.dart';
 import 'package:supabase_app/features/pets/providers/pet_repository_provider.dart';
@@ -176,6 +177,8 @@ class PetsList extends ConsumerWidget {
     WidgetRef ref,
     Pet pet,
   ) async {
+    bool isDialogOpen = false;
+
     try {
       // Pick image using platform-aware service
       final imagePickerService = ref.read(imagePickerServiceProvider);
@@ -185,6 +188,7 @@ class PetsList extends ConsumerWidget {
 
       // Show loading indicator
       if (context.mounted) {
+        isDialogOpen = true;
         showDialog(
           context: context,
           barrierDismissible: false,
@@ -210,8 +214,9 @@ class PetsList extends ConsumerWidget {
       await ref.read(petsProvider.notifier).refreshPets();
 
       // Close loading dialog and show success
-      if (context.mounted) {
-        Navigator.of(context).pop();
+      if (context.mounted && isDialogOpen) {
+        context.pop(); // Use go_router's pop
+        isDialogOpen = false;
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -222,9 +227,12 @@ class PetsList extends ConsumerWidget {
       }
     } catch (e) {
       // Close loading dialog if open and show error
-      if (context.mounted) {
-        Navigator.of(context).pop();
+      if (context.mounted && isDialogOpen) {
+        context.pop(); // Use go_router's pop
+        isDialogOpen = false;
+      }
 
+      if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error uploading image: $e'),
