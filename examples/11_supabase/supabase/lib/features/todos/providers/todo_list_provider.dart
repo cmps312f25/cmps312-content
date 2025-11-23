@@ -1,12 +1,11 @@
 import 'package:supabase_app/features/todos/providers/todo_repository_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_app/features/todos/models/todo.dart';
-import 'package:supabase_app/features/todos/providers/filtered_todos_provider.dart';
 import 'package:supabase_app/features/auth/providers/auth_provider.dart';
 
 /// Notifier for todo mutations (add, edit, toggle, delete).
-/// Does NOT cache todos in memory - delegates display to FilteredTodosNotifier.
-/// Performance benefit: Avoids loading all todos when dealing with large datasets.
+/// Does NOT manually refresh - relies on Supabase realtime streams for automatic updates.
+/// Performance benefit: Avoids unnecessary refetches, streams handle updates automatically.
 class TodoListNotifier extends Notifier<void> {
   @override
   void build() {
@@ -31,9 +30,7 @@ class TodoListNotifier extends Notifier<void> {
     );
 
     await repository.addTodo(newTodo);
-
-    // Trigger refresh of filtered todos
-    ref.read(filteredTodosProvider.notifier).refresh();
+    // No manual refresh needed - realtime stream will auto-update
   }
 
   Future<void> toggle(int id) async {
@@ -45,9 +42,7 @@ class TodoListNotifier extends Notifier<void> {
 
     final updatedTodo = todo.copyWith(completed: !todo.completed);
     await repository.updateTodo(updatedTodo);
-
-    // Trigger refresh of filtered todos
-    ref.read(filteredTodosProvider.notifier).refresh();
+    // No manual refresh needed - realtime stream will auto-update
   }
 
   Future<void> edit({required int id, required String description}) async {
@@ -59,17 +54,13 @@ class TodoListNotifier extends Notifier<void> {
 
     final updatedTodo = todo.copyWith(description: description);
     await repository.updateTodo(updatedTodo);
-
-    // Trigger refresh of filtered todos
-    ref.read(filteredTodosProvider.notifier).refresh();
+    // No manual refresh needed - realtime stream will auto-update
   }
 
   Future<void> delete(int id) async {
     final repository = ref.read(todoRepositoryProvider);
     await repository.deleteTodo(id);
-
-    // Trigger refresh of filtered todos
-    ref.read(filteredTodosProvider.notifier).refresh();
+    // No manual refresh needed - realtime stream will auto-update
   }
 }
 

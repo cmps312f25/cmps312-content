@@ -45,7 +45,9 @@ CREATE TABLE IF NOT EXISTS todos (
 -- VIEWS
 -- =============================================================================
 -- This simplifies queries of pets with owner information in the application layer
-CREATE OR REPLACE VIEW pet_owner_view AS
+-- Setting security_invoker=on ensures the View runs with the permissions of 
+-- the querying user, reducing the risk of unintended data exposure
+CREATE OR REPLACE VIEW pet_owner_view with (security_invoker = on) AS
 SELECT 
   p.id as pet_id,
   p.name as pet_name,

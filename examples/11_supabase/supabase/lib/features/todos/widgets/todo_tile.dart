@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_app/features/todos/models/todo.dart';
 import 'package:supabase_app/features/todos/providers/todo_list_provider.dart';
-import 'package:supabase_app/features/todos/providers/filtered_todos_provider.dart';
 
 // Displays a todo item with checkbox, edit, and delete actions
 class TodoTile extends ConsumerWidget {
@@ -18,8 +17,7 @@ class TodoTile extends ConsumerWidget {
         onChanged: (_) async {
           // todo.id should never be null for existing todos
           await ref.read(todoListProvider.notifier).toggle(todo.id!);
-          // Refresh filtered list after toggle
-          ref.read(filteredTodosProvider.notifier).refresh();
+          // Realtime stream will auto-update the UI
         },
       ),
       title: Column(
@@ -100,8 +98,7 @@ class TodoTile extends ConsumerWidget {
                 await ref
                     .read(todoListProvider.notifier)
                     .edit(id: todo.id!, description: controller.text.trim());
-                // Refresh filtered list after edit
-                ref.read(filteredTodosProvider.notifier).refresh();
+                // Realtime stream will auto-update the UI
                 if (context.mounted) Navigator.pop(context);
               }
             },
@@ -127,8 +124,7 @@ class TodoTile extends ConsumerWidget {
           FilledButton(
             onPressed: () async {
               await ref.read(todoListProvider.notifier).delete(todo.id!);
-              // Refresh filtered list after delete
-              ref.read(filteredTodosProvider.notifier).refresh();
+              // Realtime stream will auto-update the UI
               if (context.mounted) Navigator.pop(context);
             },
             style: FilledButton.styleFrom(backgroundColor: Colors.red),

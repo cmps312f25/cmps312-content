@@ -15,8 +15,9 @@ TRUNCATE TABLE todos RESTART IDENTITY CASCADE;
 -- =============================================================================
 -- INSERT SAMPLE TODOS
 -- =============================================================================
--- NOTE: Replace the user_id with an actual user ID from auth.users table
+-- NOTE: Replace the created_by variable with an actual user ID from auth.users table before running this seed.
 -- To get your user ID after signing up: SELECT id, email FROM auth.users;
+-- =============================================================================
 
 DO $$
 DECLARE
@@ -28,35 +29,20 @@ BEGIN
 INSERT INTO todos (description, completed, type, created_by, created_at) VALUES
   ('Buy groceries', false, 'Personal', created_by, NOW() - INTERVAL '2 hours'),
   ('Call dentist for appointment', false, 'Personal', created_by, NOW() - INTERVAL '5 hours'),
-  ('Finish reading "Atomic Habits"', true, 'Personal', created_by, NOW() - INTERVAL '1 day'),
-  ('Exercise for 30 minutes', false, 'Personal', created_by, NOW() - INTERVAL '3 hours'),
-  ('Water plants', true, 'Personal', created_by, NOW() - INTERVAL '2 days'),
-  ('Organize closet', false, 'Personal', created_by, NOW() - INTERVAL '1 hour'),
-  ('Pay utility bills', false, 'Personal', created_by, NOW() - INTERVAL '6 hours'),
-  ('Schedule car maintenance', true, 'Personal', created_by, NOW() - INTERVAL '3 days');
+  ('Exercise for 30 minutes', false, 'Personal', created_by, NOW() - INTERVAL '3 hours');
 
 -- Work todos (mostly active)
 INSERT INTO todos (description, completed, type, created_by, created_at) VALUES
   ('Review pull requests', false, 'Work', created_by, NOW() - INTERVAL '1 hour'),
   ('Attend team meeting at 2 PM', true, 'Work', created_by, NOW() - INTERVAL '4 hours'),
   ('Update project documentation', false, 'Work', created_by, NOW() - INTERVAL '2 hours'),
-  ('Fix bug #123 in authentication', false, 'Work', created_by, NOW() - INTERVAL '30 minutes'),
-  ('Deploy to staging environment', true, 'Work', created_by, NOW() - INTERVAL '1 day'),
-  ('Prepare presentation for client', false, 'Work', created_by, NOW() - INTERVAL '5 hours'),
-  ('Code review for new feature', false, 'Work', created_by, NOW() - INTERVAL '3 hours'),
-  ('Write unit tests for API', true, 'Work', created_by, NOW() - INTERVAL '2 days'),
-  ('Update dependencies to latest versions', false, 'Work', created_by, NOW() - INTERVAL '4 hours'),
   ('Optimize database queries', false, 'Work', created_by, NOW() - INTERVAL '6 hours');
 
 -- Family todos (various)
 INSERT INTO todos (description, completed, type, created_by, created_at) VALUES
   ('Plan weekend visit to Umrah', false, 'Family', created_by, NOW() - INTERVAL '3 hours'),
-  ('Schedule family dinner next weekend', false, 'Family', created_by, NOW() - INTERVAL '2 hours'),
   ('Help kids with homework', true, 'Family', created_by, NOW() - INTERVAL '1 day'),
-  ('Book vacation tickets for summer', false, 'Family', created_by, NOW() - INTERVAL '5 hours'),
-  ('Buy a gift for mom', false, 'Family', created_by, NOW() - INTERVAL '4 hours'),
-  ('Call beloved grandparents', true, 'Family', created_by, NOW() - INTERVAL '2 days'),
-  ('Arrange play date for kids', false, 'Family', created_by, NOW() - INTERVAL '1 hour');
+  ('Book vacation tickets for summer', false, 'Family', created_by, NOW() - INTERVAL '5 hours');
 
 END $$;
 
@@ -110,19 +96,3 @@ SELECT
 FROM todos
 WHERE created_at::date = CURRENT_DATE;
 
--- =============================================================================
--- EXPECTED RESULTS
--- =============================================================================
--- Total todos: 25
--- All todos assigned to: 00000000-0000-0000-0000-000000000001
--- 
--- Distribution by type:
--- - Personal: 8 todos (3 completed, 5 active)
--- - Work: 10 todos (3 completed, 7 active)
--- - Family: 7 todos (2 completed, 5 active)
---
--- Overall completion rate: ~32% (8 out of 25)
---
--- NOTE: Update the 'created_by' variable in the DO block above with your 
--- actual user ID from auth.users table before running this seed.
--- To get user ID: SELECT id, email FROM auth.users;
