@@ -49,5 +49,18 @@
 	<string>This app needs access to your photo library to upload pet images</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This app needs access to your camera to take pet photos</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>todoapp</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>todoapp</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

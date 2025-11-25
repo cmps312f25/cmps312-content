@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:io' show Platform;
 
 class AuthRepository {
   final SupabaseClient _client;
@@ -38,9 +39,22 @@ class AuthRepository {
     );
   }
 
+  // Sign in with GitHub OAuth (Mobile only)
+  Future<bool> signInWithGitHub() async {
+    try {
+      return await _client.auth.signInWithOAuth(
+        OAuthProvider.github,
+        redirectTo: 'todoapp://login-callback/',
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   // Sign out
   Future<void> signOut() async {
-    await _client.auth.signOut();
+    // Use SignOutScope.global to fully sign out from the provider.
+    await _client.auth.signOut(scope: SignOutScope.global);
   }
 
   // Reset password

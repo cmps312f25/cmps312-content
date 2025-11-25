@@ -1,12 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:supabase_app/features/pets/models/pet.dart';
 import 'package:supabase_app/features/pets/providers/pets_provider.dart';
 import 'package:supabase_app/features/pets/providers/pet_repository_provider.dart';
-import 'package:supabase_app/features/pets/providers/image_picker_service_provider.dart';
-import 'package:supabase_app/features/pets/widgets/add_pet_dialog.dart';
-import 'package:supabase_app/features/pets/widgets/confirm_delete_dialog.dart';
 
 class PetsList extends ConsumerWidget {
   final int? selectedOwnerId;
@@ -17,116 +16,92 @@ class PetsList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final petsAsync = ref.watch(petsProvider);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildHeader(context, ref),
-        Expanded(
-          child: selectedOwnerId == null
-              ? _buildEmptyState()
-              : petsAsync.when(
-                  data: (pets) => _buildPetsList(context, ref, pets),
-                  loading: () =>
-                      const Center(child: CircularProgressIndicator()),
-                  error: (error, stack) => Center(child: Text('Error: $error')),
-                ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildHeader(BuildContext context, WidgetRef ref) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      color: Colors.grey.shade100,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            selectedOwnerId == null ? 'Select an owner to view pets' : 'Pets',
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          if (selectedOwnerId != null)
-            TextButton.icon(
-              icon: const Icon(Icons.pets),
-              label: const Text('Add Pet'),
-              onPressed: () => showDialog(
-                context: context,
-                builder: (context) => AddPetDialog(ownerId: selectedOwnerId!),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return const Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.pets, size: 64, color: Colors.grey),
-          SizedBox(height: 16),
-          Text(
-            'Select an owner from the left',
-            style: TextStyle(color: Colors.grey),
-          ),
-        ],
-      ),
+    return petsAsync.when(
+      data: (pets) => pets.isEmpty
+          ? _buildEmptyState(context)
+          : _buildPetsList(context, ref, pets),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => _buildErrorState(context, error),
     );
   }
 
   Widget _buildPetsList(BuildContext context, WidgetRef ref, List<Pet> pets) {
-    if (pets.isEmpty) {
-      return const Center(child: Text('No pets for this owner'));
-    }
-
-    return ListView.builder(
-      padding: const EdgeInsets.all(8),
+    return GridView.builder(
+      padding: const EdgeInsets.all(16),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 0.75,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+      ),
       itemCount: pets.length,
       itemBuilder: (context, index) {
         final pet = pets[index];
-        return Card(
-          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              children: [
-                // Pet Image
-                _buildPetImage(context, ref, pet),
-                const SizedBox(width: 16),
-
-                // Pet Name
-                Expanded(
-                  child: Text(
-                    pet.name,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-
-                // Upload Image Button
-                IconButton(
-                  icon: const Icon(Icons.add_a_photo),
-                  color: Colors.blue,
-                  tooltip: 'Upload Image',
-                  onPressed: () => _handleUploadImage(context, ref, pet),
-                ),
-
-                // Delete Button
-                IconButton(
-                  icon: const Icon(Icons.delete),
-                  color: Colors.red,
-                  tooltip: 'Delete Pet',
-                  onPressed: () => _handleDeletePet(context, ref, pet),
-                ),
-              ],
-            ),
-          ),
-        );
+        return _buildPetCard(context, ref, pet);
       },
+    );
+  }
+
+  Widget _buildPetCard(BuildContext context, WidgetRef ref, Pet pet) {
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: InkWell(
+        onTap: () => _showPetDetails(context, ref, pet),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Pet Image
+            Expanded(flex: 3, child: _buildPetImage(context, ref, pet)),
+            // Pet Info
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      pet.name,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: IconButton(
+                            onPressed: () =>
+                                _handleUploadImage(context, ref, pet),
+                            icon: const Icon(Icons.add_a_photo, size: 16),
+                            iconSize: 20,
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline),
+                          color: Colors.red.shade400,
+                          iconSize: 20,
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          onPressed: () => _handleDeletePet(context, ref, pet),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -135,40 +110,132 @@ class PetsList extends ConsumerWidget {
       final repository = ref.read(petRepositoryProvider);
       final imageUrl = repository.getPetImageUrl(pet.imagePath!);
 
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Image.network(
-          imageUrl,
-          width: 60,
-          height: 60,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return _buildPlaceholderImage();
-          },
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null) return child;
-            return const SizedBox(
-              width: 60,
-              height: 60,
-              child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
-            );
-          },
-        ),
+      return Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.network(
+            imageUrl,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) =>
+                _buildPlaceholderImage(context),
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+              return Center(
+                child: CircularProgressIndicator(
+                  value: loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                      : null,
+                ),
+              );
+            },
+          ),
+          // Gradient overlay for better text visibility
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withValues(alpha: 0.3),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       );
     }
 
-    return _buildPlaceholderImage();
+    return _buildPlaceholderImage(context);
   }
 
-  Widget _buildPlaceholderImage() {
+  Widget _buildPlaceholderImage(BuildContext context) {
     return Container(
-      width: 60,
-      height: 60,
-      decoration: BoxDecoration(
-        color: Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(8),
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.pets,
+            size: 48,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'No photo',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
       ),
-      child: const Icon(Icons.pets, color: Colors.grey, size: 32),
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.pets_outlined,
+            size: 80,
+            color: Theme.of(context).colorScheme.outline,
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'No pets yet',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Tap + to add your first pet',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState(BuildContext context, Object error) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.error_outline, size: 64, color: Colors.red.shade400),
+          const SizedBox(height: 16),
+          Text(
+            'Error loading pets',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            error.toString(),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.error,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showPetDetails(BuildContext context, WidgetRef ref, Pet pet) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _PetDetailsSheet(pet: pet),
     );
   }
 
@@ -178,19 +245,39 @@ class PetsList extends ConsumerWidget {
     Pet pet,
   ) async {
     try {
-      // Pick image using platform-aware service
-      final imagePickerService = ref.read(imagePickerServiceProvider);
-      final imageFile = await imagePickerService.pickImage();
+      final imagePicker = ImagePicker();
+      final pickedFile = await imagePicker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 800,
+        maxHeight: 800,
+        imageQuality: 85,
+      );
 
-      if (imageFile == null) return;
+      if (pickedFile == null) return;
 
-      // Show loading indicator
+      final imageFile = File(pickedFile.path);
+
       if (!context.mounted) return;
 
+      // Show loading
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => const Center(child: CircularProgressIndicator()),
+        builder: (context) => const Center(
+          child: Card(
+            child: Padding(
+              padding: EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('Uploading photo...'),
+                ],
+              ),
+            ),
+          ),
+        ),
       );
 
       final repository = ref.read(petRepositoryProvider);
@@ -202,45 +289,34 @@ class PetsList extends ConsumerWidget {
 
       // Upload new image
       final imagePath = await repository.uploadPetImage(pet.id!, imageFile);
-
-      // Update pet with new image path
       await repository.updatePetImage(pet.id!, imagePath);
 
-      // Close loading dialog first
-      if (context.mounted) {
-        context.pop();
-      }
+      if (context.mounted) context.pop(); // Close loading dialog
 
-      // Then refresh pets list
+      // Refresh pets list
       await ref.read(petsProvider.notifier).refreshPets();
 
-      // Show success message
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Image uploaded successfully!'),
+            content: Text('Photo uploaded successfully!'),
             backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
             duration: Duration(seconds: 2),
           ),
         );
       }
     } catch (e) {
-      // Close loading dialog if open
       if (context.mounted) {
-        // Try to pop the dialog, but catch if it's not there
         try {
-          context.pop();
-        } catch (_) {
-          // Dialog was already closed or never opened
-        }
-      }
+          context.pop(); // Try to close loading dialog
+        } catch (_) {}
 
-      // Show error message
-      if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error uploading image: $e'),
+            content: Text('Error: ${e.toString()}'),
             backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
             duration: const Duration(seconds: 3),
           ),
         );
@@ -255,14 +331,115 @@ class PetsList extends ConsumerWidget {
   ) async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (context) => ConfirmDeleteDialog(
-        title: 'Delete Pet',
-        message: 'Delete ${pet.name}?',
+      builder: (context) => AlertDialog(
+        icon: const Icon(Icons.warning_amber_rounded, size: 48),
+        title: const Text('Delete Pet?'),
+        content: Text('Are you sure you want to delete ${pet.name}?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
       ),
     );
 
     if (confirm == true) {
-      await ref.read(petsProvider.notifier).deletePet(pet.id!);
+      try {
+        await ref.read(petsProvider.notifier).deletePet(pet.id!);
+
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${pet.name} deleted'),
+              backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error: $e'),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      }
     }
+  }
+}
+
+// Pet Details Bottom Sheet
+class _PetDetailsSheet extends ConsumerWidget {
+  final Pet pet;
+
+  const _PetDetailsSheet({required this.pet});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Handle bar
+          Container(
+            width: 32,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 24),
+          // Pet image
+          if (pet.imagePath != null)
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.network(
+                ref.read(petRepositoryProvider).getPetImageUrl(pet.imagePath!),
+                height: 200,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.pets, size: 100),
+              ),
+            )
+          else
+            Container(
+              height: 200,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Icon(Icons.pets, size: 100),
+            ),
+          const SizedBox(height: 24),
+          // Pet name
+          Text(
+            pet.name,
+            style: Theme.of(
+              context,
+            ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 32),
+        ],
+      ),
+    );
   }
 }

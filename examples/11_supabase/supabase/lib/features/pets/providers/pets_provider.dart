@@ -49,6 +49,12 @@ class PetsNotifier extends AsyncNotifier<List<Pet>> {
     await repository.deletePet(id);
     await refresh();
   }
+
+  Future<int> getPetCountForOwner(int ownerId) async {
+    final repository = ref.read(petRepositoryProvider);
+    final pets = await repository.getPetsByOwnerId(ownerId);
+    return pets.length;
+  }
 }
 
 final petsProvider = AsyncNotifierProvider<PetsNotifier, List<Pet>>(

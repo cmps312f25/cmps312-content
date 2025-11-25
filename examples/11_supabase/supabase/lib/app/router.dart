@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_app/features/auth/screens/oauth_callback_screen.dart';
 import 'package:supabase_app/features/todos/screens/todo_screen.dart';
 import 'package:supabase_app/features/pets/screens/pets_screen.dart';
 import 'package:supabase_app/features/auth/screens/signin_screen.dart';
@@ -42,6 +43,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/signup',
         name: 'signup',
         builder: (context, state) => const SignUpScreen(),
+      ),
+      GoRoute(
+        path: '/login-callback',
+        name: 'oauth-callback',
+        builder: (context, state) => const OAuthCallbackScreen(),
       ),
 
       // App Routes (with shell for navigation)

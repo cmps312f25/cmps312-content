@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_app/features/auth/providers/auth_provider.dart';
+import 'dart:io' show Platform;
 
 class SignInScreen extends ConsumerStatefulWidget {
   const SignInScreen({super.key});
@@ -57,6 +58,38 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  Future<void> _signInWithGitHub() async {
+    setState(() => _isLoading = true);
+
+    try {
+      final authRepo = ref.read(authRepositoryProvider);
+      await authRepo.signInWithGitHub();
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Redirecting to GitHub...'),
+            backgroundColor: Colors.blue,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e.toString().contains('only available')
+                  ? 'GitHub sign-in is only available on mobile devices'
+                  : 'GitHub sign-in failed: ${e.toString()}',
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     }
   }
@@ -182,6 +215,29 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                     ],
                   ),
                   const SizedBox(height: 24),
+
+                  // GitHub Sign In Button (Mobile only)
+                  if (!Platform.isWindows &&
+                      !Platform.isLinux &&
+                      !Platform.isMacOS)
+                    OutlinedButton.icon(
+                      onPressed: _isLoading ? null : _signInWithGitHub,
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        side: BorderSide(
+                          color: Theme.of(context).colorScheme.outline,
+                        ),
+                      ),
+                      icon: const Icon(Icons.login, size: 20),
+                      label: const Text(
+                        'Sign in with GitHub',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  if (!Platform.isWindows &&
+                      !Platform.isLinux &&
+                      !Platform.isMacOS)
+                    const SizedBox(height: 16),
 
                   // Sign Up Button
                   OutlinedButton(
