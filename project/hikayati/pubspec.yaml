@@ -1,0 +1,46 @@
+name: hikayati
+description: "hikayati app"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  flutter_riverpod: ^3.0.3
+  go_router: ^16.2.5
+  supabase_flutter: ^2.10.3
+  image_picker: ^1.2.1
+  sqflite: ^2.4.2
+  path: ^1.9.1
+  riverpod: ^3.0.3
+  sqflite_common_ffi: ^2.3.6
+  path_provider: ^2.1.5
+  shared_preferences: ^2.5.3
+  http: ^1.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_launcher_icons: "^0.14.4"
+  mockito: ^5.4.4
+  build_runner: ^2.4.14
+  flutter_lints: ^5.0.0
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/app-icon.png"
+  remove_alpha_ios: true
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+
