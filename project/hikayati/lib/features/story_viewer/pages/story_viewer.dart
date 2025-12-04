@@ -1,4 +1,4 @@
-import 'package:hikayati/features/story_viewer/presentation/providers/story_sections_provider.dart';
+import 'package:hikayati/features/story_viewer/providers/story_sections_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hikayati/core/widgets/loading_widget.dart';

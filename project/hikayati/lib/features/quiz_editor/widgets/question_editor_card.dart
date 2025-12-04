@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hikayati/core/entities/quiz.dart';
 import 'package:hikayati/core/theme/app_theme.dart';
-import 'package:hikayati/features/quiz_editor/presentation/widgets/option_item.dart';
+import 'package:hikayati/features/quiz_editor/widgets/option_item.dart';
 
 class QuestionEditorCard extends StatefulWidget {
   final int questionNumber;

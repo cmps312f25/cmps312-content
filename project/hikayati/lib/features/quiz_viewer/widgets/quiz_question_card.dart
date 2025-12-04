@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hikayati/core/theme/app_theme.dart';
 import 'package:hikayati/core/entities/quiz.dart';
-import 'package:hikayati/features/quiz_viewer/presentation/widgets/quiz_option_tile.dart';
+import 'package:hikayati/features/quiz_viewer/widgets/quiz_option_tile.dart';
 
 class QuizQuestionCard extends StatelessWidget {
   final Question question;

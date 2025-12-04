@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hikayati/app/view/app.dart';
+import 'package:hikayati/app/app.dart';
 import 'package:hikayati/core/database/database_helper.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 

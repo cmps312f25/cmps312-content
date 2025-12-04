@@ -1,3 +1,4 @@
+import 'package:hikayati/core/database/quiz_example.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -182,8 +183,7 @@ class DatabaseHelper {
       'author_id': 2,
       'cover_image_url':
           'https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-images/story3.png',
-      'quiz':
-          '[{"question":"ما هو لون السماء؟","options":[{"text":"أزرق","is_correct":true},{"text":"أخضر","is_correct":false}]}]',
+      'quiz': quizExample,          
       'created_at': DateTime.now().toIso8601String(),
     });
 

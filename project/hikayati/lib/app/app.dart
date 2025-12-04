@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hikayati/core/theme/app_theme.dart';
-import 'package:hikayati/app/router/app_router.dart';
+import 'package:hikayati/app/app_router.dart';
 
 class App extends ConsumerWidget {
   const App({super.key});

@@ -78,7 +78,7 @@ class StoryRepository implements StoryRepositoryContract {
       // allowMultipleAnswers for each question
       final quizJson = quiz.toJson();
       // Store as a list with the metadata and questions
-      updateData['quiz'] = jsonEncode([quizJson]);
+      updateData['quiz'] = jsonEncode(quizJson);
     }
 
     await db.update(
@@ -95,6 +95,17 @@ class StoryRepository implements StoryRepositoryContract {
     );
 
     return Story.fromJson(maps.first);
+  }
+
+  @override
+  Future<void> deleteStory(int storyId) async {
+    final db = await _dbHelper.database;
+
+    // Delete all sections associated with the story
+    await db.delete('sections', where: 'story_id = ?', whereArgs: [storyId]);
+
+    // Delete the story itself
+    await db.delete('stories', where: 'id = ?', whereArgs: [storyId]);
   }
 
   // ===== Story Listing & Searching =====
@@ -278,7 +289,6 @@ class StoryRepository implements StoryRepositoryContract {
   }
 
   // ===== Quiz Management =====
-
   @override
   Future<Quiz?> getQuiz(int storyId) async {
     final db = await _dbHelper.database;
@@ -295,15 +305,7 @@ class StoryRepository implements StoryRepositoryContract {
     }
 
     final quizData = jsonDecode(maps.first['quiz'] as String);
-
-    // Handle both formats: direct list or wrapped in 'questions' key
-    if (quizData is List) {
-      return Quiz.fromJson(quizData);
-    } else if (quizData is Map && quizData.containsKey('questions')) {
-      return Quiz.fromJson(quizData['questions'] as List);
-    }
-
-    return null;
+    return Quiz.fromJson(quizData as Map<String, dynamic>);
   }
 
   // ===== Category Management =====

@@ -52,27 +52,11 @@ class Quiz {
 
   Quiz({required this.questions});
 
-  factory Quiz.fromJson(List<dynamic> json) {
-    // Handle both old format (list) and new format (map with metadata)
-    if (json.isEmpty) {
-      return Quiz(questions: []);
-    }
+  factory Quiz.fromJson(Map<String, dynamic> json) {
+    final questionsList = json['questions'] as List<dynamic>? ?? [];
 
-    // If it's a map with metadata
-    if (json.first is Map && (json.first as Map).containsKey('metadata')) {
-      final questionsList = json.first['questions'] as List;
-      return Quiz(
-        questions: questionsList
-            .map(
-              (question) => Question.fromJson(question as Map<String, dynamic>),
-            )
-            .toList(),
-      );
-    }
-
-    // Old format - just a list of questions
     return Quiz(
-      questions: json
+      questions: questionsList
           .map(
             (question) => Question.fromJson(question as Map<String, dynamic>),
           )

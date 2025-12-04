@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hikayati/core/theme/app_theme.dart';
 import 'package:hikayati/core/entities/quiz.dart';
-import 'package:hikayati/features/quiz_viewer/presentation/widgets/quiz_score_indicator.dart';
-import 'package:hikayati/features/quiz_viewer/presentation/widgets/quiz_progress_bar.dart';
-import 'package:hikayati/features/quiz_viewer/presentation/widgets/quiz_question_card.dart';
-import 'package:hikayati/features/quiz_viewer/presentation/widgets/quiz_navigation_buttons.dart';
-import 'package:hikayati/features/quiz_viewer/presentation/widgets/quiz_completion_view.dart';
+import 'package:hikayati/features/quiz_viewer/widgets/quiz_score_indicator.dart';
+import 'package:hikayati/features/quiz_viewer/widgets/quiz_progress_bar.dart';
+import 'package:hikayati/features/quiz_viewer/widgets/quiz_question_card.dart';
+import 'package:hikayati/features/quiz_viewer/widgets/quiz_navigation_buttons.dart';
+import 'package:hikayati/features/quiz_viewer/widgets/quiz_completion_view.dart';
 
 class QuizViewer extends ConsumerStatefulWidget {
   final Quiz quiz;

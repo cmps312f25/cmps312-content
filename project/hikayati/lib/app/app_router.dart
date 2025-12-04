@@ -1,15 +1,15 @@
-import 'package:hikayati/features/story_viewer/presentation/pages/story_viewer.dart';
-import 'package:hikayati/features/quiz_viewer/presentation/providers/story_quiz_provider.dart';
+import 'package:hikayati/features/story_viewer/pages/story_viewer.dart';
+import 'package:hikayati/features/quiz_viewer/providers/story_quiz_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:hikayati/features/auth/presentation/pages/signin_screen.dart';
 import 'package:hikayati/features/auth/presentation/pages/signup_screen.dart';
-import 'package:hikayati/features/story_list/presentation/pages/stroy_list_page.dart';
-import 'package:hikayati/features/story_editor/presentation/pages/story_editor.dart';
-import 'package:hikayati/features/quiz_viewer/presentation/pages/quiz_viewer.dart';
-import 'package:hikayati/features/story_editor/presentation/pages/section_editor.dart';
-import 'package:hikayati/features/quiz_editor/presentation/pages/quiz_editor.dart';
+import 'package:hikayati/features/story_list/pages/stroy_list_page.dart';
+import 'package:hikayati/features/story_editor/pages/story_editor.dart';
+import 'package:hikayati/features/quiz_viewer/pages/quiz_viewer.dart';
+import 'package:hikayati/features/story_editor/pages/section_editor.dart';
+import 'package:hikayati/features/quiz_editor/pages/quiz_editor.dart';
 
 /// Provider for GoRouter
 final routerProvider = Provider<GoRouter>((ref) {

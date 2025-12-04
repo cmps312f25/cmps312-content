@@ -84,6 +84,12 @@ class StoriesNotifier extends AsyncNotifier<List<Story>> {
       ),
     );
   }
+
+  /// Delete a story
+  Future<void> deleteStory(int storyId) async {
+    await _repository.deleteStory(storyId);
+    await refresh();
+  }
 }
 
 /// Provider for stories

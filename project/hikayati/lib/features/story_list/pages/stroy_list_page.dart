@@ -4,11 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:hikayati/core/widgets/empty_state_widget.dart';
 import 'package:hikayati/core/widgets/loading_widget.dart';
 import 'package:hikayati/core/widgets/error_display_widget.dart';
-import 'package:hikayati/features/story_list/presentation/providers/stories_provider.dart';
-import 'package:hikayati/features/story_list/presentation/widgets/story_card.dart';
-import 'package:hikayati/features/story_list/presentation/widgets/search_bar.dart'
-    as custom;
-import 'package:hikayati/features/story_list/presentation/widgets/filter_sheet.dart';
+import 'package:hikayati/features/story_list/providers/stories_provider.dart';
+import 'package:hikayati/features/story_list/widgets/story_card.dart';
+import 'package:hikayati/features/story_list/widgets/search_bar.dart' as custom;
+import 'package:hikayati/features/story_list/widgets/filter_sheet.dart';
 import 'package:hikayati/core/entities/reading_level.dart';
 import 'package:hikayati/core/entities/story.dart';
 import 'package:hikayati/features/auth/presentation/providers/auth_provider.dart';
@@ -234,15 +233,13 @@ class _StoryListPageState extends ConsumerState<StoryListPage> {
 
   Future<void> _deleteStory(int storyId) async {
     try {
-      // TODO: Implement delete functionality
-      // Refresh the stories list
-      ref.read(storiesNotifierProvider.notifier).refresh();
+      await ref.read(storiesNotifierProvider.notifier).deleteStory(storyId);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Delete functionality to be implemented'),
-            backgroundColor: Colors.orange,
+            content: Text('Story deleted successfully'),
+            backgroundColor: Colors.green,
           ),
         );
       }

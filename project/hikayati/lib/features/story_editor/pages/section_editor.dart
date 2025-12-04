@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hikayati/core/widgets/responsive_helper.dart';
 import 'package:hikayati/core/widgets/loading_widget.dart';
 import 'package:hikayati/core/widgets/error_display_widget.dart';
-import 'package:hikayati/features/story_editor/presentation/providers/section_provider.dart';
+import 'package:hikayati/features/story_editor/providers/section_provider.dart';
 
 class SectionEditor extends ConsumerStatefulWidget {
   final int storyId;

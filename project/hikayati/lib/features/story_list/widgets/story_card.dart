@@ -5,9 +5,9 @@ import 'package:hikayati/core/entities/story.dart';
 import 'package:hikayati/core/entities/story_extension.dart';
 import 'package:hikayati/core/widgets/metadata_chip.dart';
 import 'package:hikayati/features/auth/presentation/providers/auth_provider.dart';
-import 'package:hikayati/features/story_list/presentation/widgets/story_card_image.dart';
-import 'package:hikayati/features/story_list/presentation/widgets/story_card_actions.dart';
-import 'package:hikayati/features/story_list/presentation/widgets/story_card_owner_actions.dart';
+import 'package:hikayati/features/story_list/widgets/story_card_image.dart';
+import 'package:hikayati/features/story_list/widgets/story_card_actions.dart';
+import 'package:hikayati/features/story_list/widgets/story_card_owner_actions.dart';
 
 /// Card widget for displaying a story with cover image, title, and metadata
 class StoryCard extends ConsumerWidget {

@@ -4,11 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hikayati/core/theme/app_theme.dart';
 import 'package:hikayati/core/entities/quiz.dart';
-import 'package:hikayati/features/quiz_editor/presentation/providers/quiz_provider.dart';
-import 'package:hikayati/features/quiz_editor/presentation/widgets/quiz_top_bar.dart';
-import 'package:hikayati/features/quiz_editor/presentation/widgets/quiz_settings_card.dart';
-import 'package:hikayati/features/quiz_editor/presentation/widgets/quiz_empty_state.dart';
-import 'package:hikayati/features/quiz_editor/presentation/widgets/question_editor_card.dart';
+import 'package:hikayati/features/quiz_editor/providers/quiz_provider.dart';
+import 'package:hikayati/features/quiz_editor/widgets/quiz_top_bar.dart';
+import 'package:hikayati/features/quiz_editor/widgets/quiz_empty_state.dart';
+import 'package:hikayati/features/quiz_editor/widgets/question_editor_card.dart';
 
 class QuizEditor extends ConsumerStatefulWidget {
   final int storyId;
@@ -273,7 +272,17 @@ class _QuizEditorState extends ConsumerState<QuizEditor> {
                     ? SingleChildScrollView(
                         child: Column(
                           children: [
-                            QuizSettingsCard(questionCount: _questions.length),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                '${_questions.length} Question${_questions.length != 1 ? 's' : ''}',
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color: AppTheme.grey900,
+                                    ),
+                              ),
+                            ),
                             const QuizEmptyState(),
                           ],
                         ),
@@ -281,8 +290,16 @@ class _QuizEditorState extends ConsumerState<QuizEditor> {
                     : CustomScrollView(
                         slivers: [
                           SliverToBoxAdapter(
-                            child: QuizSettingsCard(
-                              questionCount: _questions.length,
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Text(
+                                '${_questions.length} Question${_questions.length != 1 ? 's' : ''}',
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color: AppTheme.grey900,
+                                    ),
+                              ),
                             ),
                           ),
                           SliverPadding(

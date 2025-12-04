@@ -5,12 +5,12 @@ import 'package:hikayati/core/widgets/responsive_helper.dart';
 import 'package:hikayati/core/widgets/loading_widget.dart';
 import 'package:hikayati/core/widgets/error_display_widget.dart';
 import 'package:hikayati/core/widgets/empty_state_widget.dart';
-import 'package:hikayati/features/story_editor/presentation/widgets/language_selector.dart';
-import 'package:hikayati/features/story_editor/presentation/widgets/reading_level_selector.dart';
-import 'package:hikayati/features/story_editor/presentation/widgets/category_selector.dart';
-import 'package:hikayati/features/story_editor/presentation/providers/story_provider.dart';
-import 'package:hikayati/features/story_editor/presentation/providers/sections_provider.dart';
-import 'package:hikayati/features/story_list/presentation/providers/stories_provider.dart';
+import 'package:hikayati/features/story_editor/widgets/language_selector.dart';
+import 'package:hikayati/features/story_editor/widgets/reading_level_selector.dart';
+import 'package:hikayati/features/story_editor/widgets/category_selector.dart';
+import 'package:hikayati/features/story_editor/providers/story_provider.dart';
+import 'package:hikayati/features/story_editor/providers/sections_provider.dart';
+import 'package:hikayati/features/story_list/providers/stories_provider.dart';
 
 class StoryEditor extends ConsumerStatefulWidget {
   final int? storyId;

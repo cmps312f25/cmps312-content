@@ -27,6 +27,9 @@ abstract class StoryRepositoryContract {
     Quiz? quiz,
   });
 
+  /// Delete a story and all its sections
+  Future<void> deleteStory(int storyId);
+
   // ===== Story Discovery & Listing =====
 
   /// Get all published stories with optional filters
