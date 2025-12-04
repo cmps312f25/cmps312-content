@@ -38,23 +38,33 @@
     "story_id": 2,
     "questions": [
       {
-        "text": "What was hidden in the Whispering Woods?",
+        "text": "Que cherche Leïla ce matin-là? (What is Leïla looking for this morning?)",
         "is_multi_select": false,
         "options": [
-          { "text": "A treasure chest", "is_correct": false },
-          { "text": "A secret", "is_correct": true },
-          { "text": "A cave", "is_correct": false },
-          { "text": "A river", "is_correct": false }
+          { "text": "Son chat Mimi", "is_correct": true },
+          { "text": "Son fromage", "is_correct": false },
+          { "text": "Ses clés", "is_correct": false },
+          { "text": "Son jouet", "is_correct": false }
         ]
       },
       {
-        "text": "Who decided to uncover the secret?",
+        "text": "Où Leïla cherche-t-elle Mimi? (Where does Leïla look for Mimi?)",
+        "is_multi_select": true,
+        "options": [
+          { "text": "Sous le lit", "is_correct": true },
+          { "text": "Dans le placard", "is_correct": true },
+          { "text": "Dans le jardin", "is_correct": false },
+          { "text": "Dans la salle de bain", "is_correct": false }
+        ]
+      },
+      {
+        "text": "Où trouve-t-elle finalement Mimi? (Where does she finally find Mimi?)",
         "is_multi_select": false,
         "options": [
-          { "text": "A young fox named Finn", "is_correct": true },
-          { "text": "A rabbit", "is_correct": false },
-          { "text": "A bear", "is_correct": false },
-          { "text": "A bird", "is_correct": false }
+          { "text": "Sur la table dans la cuisine", "is_correct": true },
+          { "text": "Sous le lit", "is_correct": false },
+          { "text": "Dans le placard", "is_correct": false },
+          { "text": "Dans le jardin", "is_correct": false }
         ]
       }
     ]

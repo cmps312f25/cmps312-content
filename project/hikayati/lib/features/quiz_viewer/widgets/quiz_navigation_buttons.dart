@@ -66,7 +66,7 @@ class QuizNavigationButtons extends StatelessWidget {
                 ),
               ),
               child: Text(
-                isLastQuestion && isQuestionSubmitted ? 'Finish' : 'Next',
+                _getButtonLabel(),
                 style: theme.textTheme.titleMedium?.copyWith(
                   color: AppTheme.white,
                   fontWeight: FontWeight.bold,
@@ -77,5 +77,15 @@ class QuizNavigationButtons extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _getButtonLabel() {
+    if (!isQuestionSubmitted) {
+      return 'Check Answer';
+    }
+    if (isLastQuestion) {
+      return 'Finish';
+    }
+    return 'Next';
   }
 }
