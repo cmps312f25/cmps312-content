@@ -1,15 +1,17 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hikayati/core/database/database_helper.dart';
 import 'package:hikayati/core/database/db_schema.dart';
 import 'package:hikayati/core/entities/quiz.dart';
 import 'package:hikayati/core/entities/quiz_question.dart';
 import 'package:hikayati/core/entities/quiz_option.dart';
 import 'package:hikayati/core/repositories/quiz_repository_contract.dart';
+import 'package:hikayati/core/providers/database_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 /// Repository for managing quiz data
 class QuizRepository implements QuizRepositoryContract {
-  Future<Database> get _database => DatabaseHelper.instance.database;
+  final Future<Database> _database;
+
+  QuizRepository(this._database);
 
   @override
   /// Retrieves a quiz for a story
@@ -138,5 +140,6 @@ class QuizRepository implements QuizRepositoryContract {
 
 /// Provider for QuizRepository
 final quizRepositoryProvider = Provider<QuizRepository>((ref) {
-  return QuizRepository();
+  final db = ref.watch(databaseProvider.future);
+  return QuizRepository(db);
 });

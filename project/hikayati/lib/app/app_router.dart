@@ -52,20 +52,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
 
       GoRoute(
-        path: '/section-editor/:storyId', // Route for adding a new section
-        builder: (context, state) =>
-            SectionEditor(storyId: int.parse(state.pathParameters['storyId']!)),
+        path: '/section-editor/:storyId/:sectionId',
+        builder: (context, state) {
+          final sectionId = state.pathParameters['sectionId'];
+          return SectionEditor(
+            storyId: int.parse(state.pathParameters['storyId']!),
+            sectionId: sectionId == null || sectionId == 'new'
+                ? null
+                : int.parse(sectionId),
+          );
+        },
       ),
 
-      GoRoute(
-        path:
-            '/section-editor/:storyId/:sectionId', // Route for editing an existing section
-        builder: (context, state) => SectionEditor(
-          storyId: int.parse(state.pathParameters['storyId']!),
-          sectionId: int.parse(state.pathParameters['sectionId']!),
-        ),
-      ),
-      
       GoRoute(
         path: '/quiz-editor/:storyId',
         builder: (context, state) =>

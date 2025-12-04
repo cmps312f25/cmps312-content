@@ -1,16 +1,16 @@
-import 'package:hikayati/core/database/database_helper.dart';
 import 'package:hikayati/core/entities/user.dart';
 import 'package:hikayati/features/auth/repositories/auth_repository_contract.dart';
+import 'package:sqflite/sqflite.dart';
 
 class AuthRepository implements AuthRepositoryContract {
-  final DatabaseHelper _dbHelper;
+  final Future<Database> _database;
 
-  AuthRepository(this._dbHelper);
+  AuthRepository(this._database);
 
   @override
   // Sign up with email and password
   Future<User> signUp(User user) async {
-    final db = await _dbHelper.database;
+    final db = await _database;
 
     // Check if email already exists
     final existingUsers = await db.query(
@@ -34,7 +34,7 @@ class AuthRepository implements AuthRepositoryContract {
   @override
   // Sign in with email and password
   Future<User> signIn({required String email, required String password}) async {
-    final db = await _dbHelper.database;
+    final db = await _database;
 
     // Search for the user with matching email and password
     final maps = await db.query(

@@ -5,12 +5,9 @@ import 'package:sqflite/sqflite.dart';
 
 /// Singleton helper class for managing the local SQLite database
 ///
-/// This class implements best practices for SQLite database management:
-/// - Singleton pattern to ensure single database connection
-/// - Lazy initialization
-/// - Proper transaction handling
-/// - Connection lifecycle management
-/// - Error handling and logging
+/// This class ensures single database connection throughout the 
+/// app lifecycle, handles database initialization, schema creation, 
+/// upgrades, and provides methods for database access and management.
 class DatabaseHelper {
   DatabaseHelper._();
 

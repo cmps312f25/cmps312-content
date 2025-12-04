@@ -11,6 +11,9 @@ import 'package:hikayati/features/story_editor/widgets/category_selector.dart';
 import 'package:hikayati/features/story_editor/providers/story_provider.dart';
 import 'package:hikayati/features/story_editor/providers/sections_provider.dart';
 import 'package:hikayati/features/story_list/providers/stories_provider.dart';
+import 'package:hikayati/core/entities/story.dart';
+import 'package:hikayati/core/entities/reading_level.dart';
+import 'package:hikayati/features/auth/presentation/providers/auth_provider.dart';
 
 class StoryEditor extends ConsumerStatefulWidget {
   final int? storyId;
@@ -367,34 +370,51 @@ class _StoryEditorState extends ConsumerState<StoryEditor> {
       );
       return;
     }
-    ref
-        .read(storyNotifierProvider.notifier)
-        .createStory(
-          title: _titleController.text,
-          language: _selectedLanguageCode!,
-          readingLevel: _selectedReadingLevel!,
-          categoryId: _selectedCategoryId,
-          coverImageUrl: _coverImageUrlController.text.isEmpty
-              ? null
-              : _coverImageUrlController.text,
-        );
+
+    final currentUser = ref.read(currentUserProvider);
+    if (currentUser == null || currentUser.id == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('User not authenticated')));
+      return;
+    }
+
+    final newStory = Story.create(
+      title: _titleController.text,
+      language: _selectedLanguageCode!,
+      readingLevel: ReadingLevel.fromString(_selectedReadingLevel!),
+      categoryId: _selectedCategoryId,
+      coverImageUrl: _coverImageUrlController.text.isEmpty
+          ? null
+          : _coverImageUrlController.text,
+      authorId: currentUser.id!,
+    );
+
+    ref.read(storyNotifierProvider.notifier).createStory(newStory);
   }
 
   Future<void> _saveStoryAndReturn(int storyId) async {
     if (!_formKey.currentState!.validate()) return;
 
-    await ref
-        .read(storyNotifierProvider.notifier)
-        .updateStory(
-          storyId: storyId,
-          title: _titleController.text,
-          language: _selectedLanguageCode,
-          readingLevel: _selectedReadingLevel,
-          categoryId: _selectedCategoryId,
-          coverImageUrl: _coverImageUrlController.text.isEmpty
-              ? null
-              : _coverImageUrlController.text,
-        );
+    final currentStory = ref.read(storyNotifierProvider).value;
+    if (currentStory == null) return;
+
+    final updatedStory = Story(
+      id: storyId,
+      title: _titleController.text,
+      language: _selectedLanguageCode ?? currentStory.language,
+      readingLevel: _selectedReadingLevel != null
+          ? ReadingLevel.fromString(_selectedReadingLevel!)
+          : currentStory.readingLevel,
+      categoryId: _selectedCategoryId,
+      coverImageUrl: _coverImageUrlController.text.isEmpty
+          ? null
+          : _coverImageUrlController.text,
+      authorId: currentStory.authorId,
+      createdAt: currentStory.createdAt,
+    );
+
+    await ref.read(storyNotifierProvider.notifier).updateStory(updatedStory);
 
     if (mounted) {
       context.pop();
@@ -403,7 +423,7 @@ class _StoryEditorState extends ConsumerState<StoryEditor> {
 
   Future<void> _addSection(int storyId, int sectionCount) async {
     if (mounted) {
-      await context.push('/section-editor/$storyId');
+      await context.push('/section-editor/$storyId/new');
       if (mounted) {
         ref.read(sectionsNotifierProvider.notifier).loadSections(storyId);
       }

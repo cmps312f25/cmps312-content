@@ -7,23 +7,10 @@ abstract class StoryRepositoryContract {
   // ===== Story Creation & Editing =====
 
   /// Create a new story
-  Future<Story> createStory({
-    required String title,
-    required String language,
-    required String readingLevel,
-    int? categoryId,
-    String? coverImageUrl,
-  });
+  Future<Story> createStory(Story story);
 
   /// Update an existing story
-  Future<Story> updateStory({
-    required int storyId,
-    String? title,
-    String? language,
-    String? readingLevel,
-    int? categoryId,
-    String? coverImageUrl,
-  });
+  Future<Story> updateStory(Story story);
 
   /// Delete a story and all its sections
   Future<void> deleteStory(int storyId);

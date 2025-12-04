@@ -1,17 +1,17 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hikayati/core/database/database_helper.dart';
-import 'package:hikayati/core/providers/database_provider.dart';
 import 'package:hikayati/features/auth/presentation/providers/auth_provider.dart';
 import 'package:hikayati/core/repositories/story_repository_contract.dart';
 import 'package:hikayati/core/entities/story.dart';
 import 'package:hikayati/core/entities/section.dart';
 import 'package:hikayati/core/entities/category.dart';
+import 'package:hikayati/core/providers/database_provider.dart';
+import 'package:sqflite/sqflite.dart';
 
 class StoryRepository implements StoryRepositoryContract {
-  final DatabaseHelper _dbHelper;
+  final Future<Database> _database;
   final Ref _ref;
 
-  StoryRepository(this._dbHelper, this._ref);
+  StoryRepository(this._database, this._ref);
 
   Future<int> _getCurrentUserId() async {
     final user = _ref.read(currentUserProvider);
@@ -23,24 +23,18 @@ class StoryRepository implements StoryRepositoryContract {
 
   // ===== Story CRUD =====
   @override
-  Future<Story> createStory({
-    required String title,
-    required String language,
-    required String readingLevel,
-    int? categoryId,
-    String? coverImageUrl,
-  }) async {
-    final db = await _dbHelper.database;
+  Future<Story> createStory(Story story) async {
+    final db = await _database;
     final userId = await _getCurrentUserId();
 
     final storyData = {
       'author_id': userId,
-      'title': title,
-      'language': language,
-      'reading_level': readingLevel,
+      'title': story.title,
+      'language': story.language,
+      'reading_level': story.readingLevel.value,
       'created_at': DateTime.now().toIso8601String(),
-      if (categoryId != null) 'category_id': categoryId,
-      if (coverImageUrl != null) 'cover_image_url': coverImageUrl,
+      if (story.categoryId != null) 'category_id': story.categoryId,
+      if (story.coverImageUrl != null) 'cover_image_url': story.coverImageUrl,
     };
 
     final id = await db.insert('stories', storyData);
@@ -51,37 +45,36 @@ class StoryRepository implements StoryRepositoryContract {
   }
 
   @override
-  Future<Story> updateStory({
-    required int storyId,
-    String? title,
-    String? language,
-    String? readingLevel,
-    int? categoryId,
-    String? coverImageUrl,
-  }) async {
-    final db = await _dbHelper.database;
+  Future<Story> updateStory(Story story) async {
+    final db = await _database;
+
+    if (story.id == null) {
+      throw Exception('Story ID is required for update');
+    }
 
     final updateData = <String, dynamic>{
+      'title': story.title,
+      'language': story.language,
+      'reading_level': story.readingLevel.value,
       'updated_at': DateTime.now().toIso8601String(),
     };
 
-    if (title != null) updateData['title'] = title;
-    if (language != null) updateData['language'] = language;
-    if (readingLevel != null) updateData['reading_level'] = readingLevel;
-    if (categoryId != null) updateData['category_id'] = categoryId;
-    if (coverImageUrl != null) updateData['cover_image_url'] = coverImageUrl;
+    if (story.categoryId != null) updateData['category_id'] = story.categoryId;
+    if (story.coverImageUrl != null) {
+      updateData['cover_image_url'] = story.coverImageUrl;
+    }
 
     await db.update(
       'stories',
       updateData,
       where: 'id = ?',
-      whereArgs: [storyId],
+      whereArgs: [story.id],
     );
 
     final maps = await db.query(
       'stories',
       where: 'id = ?',
-      whereArgs: [storyId],
+      whereArgs: [story.id],
     );
 
     return Story.fromJson(maps.first);
@@ -89,7 +82,7 @@ class StoryRepository implements StoryRepositoryContract {
 
   @override
   Future<void> deleteStory(int storyId) async {
-    final db = await _dbHelper.database;
+    final db = await _database;
 
     // Delete all sections associated with the story
     await db.delete('sections', where: 'story_id = ?', whereArgs: [storyId]);
@@ -107,7 +100,7 @@ class StoryRepository implements StoryRepositoryContract {
     String? readingLevel,
     String? language,
   }) async {
-    final db = await _dbHelper.database;
+    final db = await _database;
 
     final conditions = <String>[];
     final args = <dynamic>[];
@@ -144,7 +137,7 @@ class StoryRepository implements StoryRepositoryContract {
 
   @override
   Future<List<Story>> searchStories(String query) async {
-    final db = await _dbHelper.database;
+    final db = await _database;
 
     final maps = await db.query(
       'stories',
@@ -160,7 +153,7 @@ class StoryRepository implements StoryRepositoryContract {
 
   @override
   Future<Story> getStory(int storyId) async {
-    final db = await _dbHelper.database;
+    final db = await _database;
 
     final maps = await db.query(
       'stories',
@@ -190,7 +183,7 @@ class StoryRepository implements StoryRepositoryContract {
     String? sectionText,
     String? audioUrl,
   }) async {
-    final db = await _dbHelper.database;
+    final db = await _database;
 
     final sectionData = {
       'story_id': storyId,
@@ -214,7 +207,7 @@ class StoryRepository implements StoryRepositoryContract {
     String? sectionText,
     String? audioUrl,
   }) async {
-    final db = await _dbHelper.database;
+    final db = await _database;
 
     final updateData = <String, dynamic>{
       'updated_at': DateTime.now().toIso8601String(),
@@ -242,14 +235,14 @@ class StoryRepository implements StoryRepositoryContract {
 
   @override
   Future<void> deleteSection(int sectionId) async {
-    final db = await _dbHelper.database;
+    final db = await _database;
 
     await db.delete('sections', where: 'id = ?', whereArgs: [sectionId]);
   }
 
   @override
   Future<Section> getSection(int sectionId) async {
-    final db = await _dbHelper.database;
+    final db = await _database;
 
     final maps = await db.query(
       'sections',
@@ -266,7 +259,7 @@ class StoryRepository implements StoryRepositoryContract {
 
   @override
   Future<List<Section>> getSections(int storyId) async {
-    final db = await _dbHelper.database;
+    final db = await _database;
 
     final maps = await db.query(
       'sections',
@@ -282,7 +275,7 @@ class StoryRepository implements StoryRepositoryContract {
 
   @override
   Future<List<Category>> getCategories() async {
-    final db = await _dbHelper.database;
+    final db = await _database;
     final categoriesJson = await db.query('categories', orderBy: 'name ASC');
     return categoriesJson.map((json) => Category.fromJson(json)).toList();
   }
@@ -290,6 +283,6 @@ class StoryRepository implements StoryRepositoryContract {
 
 /// Provider for StoryRepository
 final storyRepositoryProvider = Provider<StoryRepository>((ref) {
-  final dbHelper = ref.watch(databaseHelperProvider);
-  return StoryRepository(dbHelper, ref);
+  final db = ref.watch(databaseProvider.future);
+  return StoryRepository(db, ref);
 });

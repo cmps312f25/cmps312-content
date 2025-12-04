@@ -5,8 +5,8 @@ import 'package:hikayati/core/entities/user.dart';
 
 // Auth Repository Provider
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
-  final dbHelper = ref.watch(databaseHelperProvider);
-  return AuthRepository(dbHelper);
+  final db = ref.watch(databaseProvider.future);
+  return AuthRepository(db);
 });
 
 // Auth State Notifier

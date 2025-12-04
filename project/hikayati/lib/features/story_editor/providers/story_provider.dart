@@ -9,24 +9,12 @@ class StoryNotifier extends AsyncNotifier<Story?> {
     return null;
   }
 
-  Future<void> createStory({
-    required String title,
-    required String language,
-    required String readingLevel,
-    int? categoryId,
-    String? coverImageUrl,
-  }) async {
+  Future<void> createStory(Story story) async {
     state = const AsyncValue.loading();
 
     state = await AsyncValue.guard(() async {
       final repository = ref.read(storyRepositoryProvider);
-      return await repository.createStory(
-        title: title,
-        language: language,
-        readingLevel: readingLevel,
-        categoryId: categoryId,
-        coverImageUrl: coverImageUrl,
-      );
+      return await repository.createStory(story);
     });
   }
 
@@ -39,26 +27,11 @@ class StoryNotifier extends AsyncNotifier<Story?> {
     });
   }
 
-  Future<void> updateStory({
-    required int storyId,
-    String? title,
-    String? language,
-    String? readingLevel,
-    int? categoryId,
-    String? coverImageUrl,
-  }) async {
+  Future<void> updateStory(Story story) async {
     state = const AsyncValue.loading();
-
     state = await AsyncValue.guard(() async {
       final repository = ref.read(storyRepositoryProvider);
-      return await repository.updateStory(
-        storyId: storyId,
-        title: title,
-        language: language,
-        readingLevel: readingLevel,
-        categoryId: categoryId,
-        coverImageUrl: coverImageUrl,
-      );
+      return await repository.updateStory(story);
     });
   }
 

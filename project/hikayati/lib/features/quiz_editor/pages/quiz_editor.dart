@@ -240,7 +240,8 @@ class _QuizEditorState extends ConsumerState<QuizEditor> {
   }
 
   Future<void> _handleBack() async {
-    if (await _onWillPop() && context.mounted) {
+    final shouldPop = await _onWillPop();
+    if (shouldPop && mounted) {
       context.pop();
     }
   }
