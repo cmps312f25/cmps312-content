@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hikayati/features/story_list/repositories/story_repository_impl.dart';
+import 'package:hikayati/core/repositories/story_repository.dart';
 import 'package:hikayati/core/entities/story.dart';
 
 /// Manages the list of stories with async loading states
@@ -9,7 +9,7 @@ class StoriesNotifier extends AsyncNotifier<List<Story>> {
     return _fetchStories();
   }
 
-  StoryRepositoryImpl get _repository => ref.read(storyRepositoryProvider);
+  StoryRepository get _repository => ref.read(storyRepositoryProvider);
 
   Future<List<Story>> _fetchStories({
     String? searchQuery,
@@ -87,7 +87,7 @@ class StoriesNotifier extends AsyncNotifier<List<Story>> {
 }
 
 /// Provider for stories
-final storiesProvider =
+final storiesNotifierProvider =
     AsyncNotifierProvider.autoDispose<StoriesNotifier, List<Story>>(
       StoriesNotifier.new,
     );

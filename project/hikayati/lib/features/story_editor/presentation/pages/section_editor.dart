@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hikayati/core/utils/responsive_helper.dart';
+import 'package:hikayati/core/widgets/responsive_helper.dart';
 import 'package:hikayati/core/widgets/loading_widget.dart';
 import 'package:hikayati/core/widgets/error_display_widget.dart';
 import 'package:hikayati/features/story_editor/presentation/providers/section_provider.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hikayati/core/entities/story.dart';
-import 'package:hikayati/features/story_editor/repositories/story_repository_impl.dart';
+import 'package:hikayati/core/repositories/story_repository.dart';
 
 /// Provider for managing a single story in the editor
 class StoryNotifier extends AsyncNotifier<Story?> {
@@ -19,7 +19,7 @@ class StoryNotifier extends AsyncNotifier<Story?> {
     state = const AsyncValue.loading();
 
     state = await AsyncValue.guard(() async {
-      final repository = ref.read(storyEditorRepositoryProvider);
+      final repository = ref.read(storyRepositoryProvider);
       return await repository.createStory(
         title: title,
         language: language,
@@ -34,8 +34,8 @@ class StoryNotifier extends AsyncNotifier<Story?> {
     state = const AsyncValue.loading();
 
     state = await AsyncValue.guard(() async {
-      final repository = ref.read(storyEditorRepositoryProvider);
-      return await repository.getStoryForEdit(storyId);
+      final repository = ref.read(storyRepositoryProvider);
+      return await repository.getStory(storyId);
     });
   }
 
@@ -50,7 +50,7 @@ class StoryNotifier extends AsyncNotifier<Story?> {
     state = const AsyncValue.loading();
 
     state = await AsyncValue.guard(() async {
-      final repository = ref.read(storyEditorRepositoryProvider);
+      final repository = ref.read(storyRepositoryProvider);
       return await repository.updateStory(
         storyId: storyId,
         title: title,

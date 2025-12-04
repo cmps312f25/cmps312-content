@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hikayati/core/entities/section.dart';
-import 'package:hikayati/features/story_editor/repositories/story_repository_impl.dart';
+import 'package:hikayati/core/repositories/story_repository.dart';
 
 /// Provider for managing sections of a story
 class SectionsNotifier extends AsyncNotifier<List<Section>> {
@@ -13,7 +13,7 @@ class SectionsNotifier extends AsyncNotifier<List<Section>> {
     state = const AsyncValue.loading();
 
     state = await AsyncValue.guard(() async {
-      final repository = ref.read(storyEditorRepositoryProvider);
+      final repository = ref.read(storyRepositoryProvider);
       return await repository.getSections(storyId);
     });
   }
@@ -24,7 +24,7 @@ class SectionsNotifier extends AsyncNotifier<List<Section>> {
     String? sectionText,
     String? audioUrl,
   }) async {
-    final repository = ref.read(storyEditorRepositoryProvider);
+    final repository = ref.read(storyRepositoryProvider);
     final newSection = await repository.addSection(
       storyId: storyId,
       imageUrl: imageUrl,
@@ -45,7 +45,7 @@ class SectionsNotifier extends AsyncNotifier<List<Section>> {
     String? sectionText,
     String? audioUrl,
   }) async {
-    final repository = ref.read(storyEditorRepositoryProvider);
+    final repository = ref.read(storyRepositoryProvider);
     await repository.updateSection(
       sectionId: sectionId,
       imageUrl: imageUrl,
@@ -58,7 +58,7 @@ class SectionsNotifier extends AsyncNotifier<List<Section>> {
   }
 
   Future<void> deleteSection(int sectionId, int storyId) async {
-    final repository = ref.read(storyEditorRepositoryProvider);
+    final repository = ref.read(storyRepositoryProvider);
     await repository.deleteSection(sectionId);
 
     // Reload sections after deleting

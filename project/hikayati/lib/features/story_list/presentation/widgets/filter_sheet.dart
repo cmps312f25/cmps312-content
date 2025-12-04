@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hikayati/core/entities/reading_level.dart';
-import 'package:hikayati/features/story_list/presentation/providers/categories_provider.dart';
+import 'package:hikayati/core/providers/categories_provider.dart';
 
 class FilterSheet extends ConsumerStatefulWidget {
   final Set<ReadingLevel> initialLevels;

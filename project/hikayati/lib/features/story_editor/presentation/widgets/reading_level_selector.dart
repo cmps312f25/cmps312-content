@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hikayati/core/theme/app_theme.dart';
-import '../utils/responsive_helper.dart';
+import 'package:hikayati/core/widgets/responsive_helper.dart';
 
 /// Widget for selecting reading level
 class ReadingLevelSelector extends ConsumerWidget {
@@ -34,7 +34,7 @@ class ReadingLevelSelector extends ConsumerWidget {
       runSpacing: ref.responsive(ResponsiveSpacing.sm),
       children: levels.map((level) {
         final isSelected = selectedLevel == level;
-        final color = _getLevelColor(level, theme);
+        final color = theme.colorScheme.secondary;
 
         return FilterChip(
           label: Text(level),
@@ -58,29 +58,5 @@ class ReadingLevelSelector extends ConsumerWidget {
         );
       }).toList(),
     );
-  }
-
-  Color _getLevelColor(String level, ThemeData theme) {
-    final colorScheme = theme.colorScheme;
-    switch (level) {
-      case 'KG1':
-        return colorScheme.levelKG1;
-      case 'KG2':
-        return colorScheme.levelKG2;
-      case 'Year 1':
-        return colorScheme.levelYear1;
-      case 'Year 2':
-        return colorScheme.levelYear2;
-      case 'Year 3':
-        return colorScheme.levelYear3;
-      case 'Year 4':
-        return colorScheme.levelYear4;
-      case 'Year 5':
-        return colorScheme.levelYear5;
-      case 'Year 6':
-        return colorScheme.levelYear6;
-      default:
-        return AppTheme.grey400;
-    }
   }
 }

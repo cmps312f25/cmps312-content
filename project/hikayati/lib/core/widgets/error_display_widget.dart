@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../utils/responsive_helper.dart';
+import 'responsive_helper.dart';
 
 /// Widget to display errors with retry option
 class ErrorDisplayWidget extends ConsumerWidget {

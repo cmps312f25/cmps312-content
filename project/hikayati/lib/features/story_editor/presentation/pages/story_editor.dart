@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hikayati/core/utils/responsive_helper.dart';
+import 'package:hikayati/core/widgets/responsive_helper.dart';
 import 'package:hikayati/core/widgets/loading_widget.dart';
 import 'package:hikayati/core/widgets/error_display_widget.dart';
-import 'package:hikayati/core/widgets/language_selector.dart';
-import 'package:hikayati/core/widgets/reading_level_selector.dart';
-import 'package:hikayati/core/widgets/category_selector.dart';
 import 'package:hikayati/core/widgets/empty_state_widget.dart';
+import 'package:hikayati/features/story_editor/presentation/widgets/language_selector.dart';
+import 'package:hikayati/features/story_editor/presentation/widgets/reading_level_selector.dart';
+import 'package:hikayati/features/story_editor/presentation/widgets/category_selector.dart';
 import 'package:hikayati/features/story_editor/presentation/providers/story_provider.dart';
 import 'package:hikayati/features/story_editor/presentation/providers/sections_provider.dart';
 import 'package:hikayati/features/story_list/presentation/providers/stories_provider.dart';
@@ -28,7 +28,7 @@ class _StoryEditorState extends ConsumerState<StoryEditor> {
   // State for new fields
   String? _selectedLanguageCode;
   String? _selectedReadingLevel;
-  String? _selectedCategoryName;
+  int? _selectedCategoryId;
 
   // Track initial load to avoid showing success message on first load
   bool _isInitialLoad = true;
@@ -75,7 +75,7 @@ class _StoryEditorState extends ConsumerState<StoryEditor> {
             setState(() {
               _selectedLanguageCode = story.language;
               _selectedReadingLevel = story.readingLevel.value;
-              _selectedCategoryName = _getCategoryNameById(story.categoryId);
+              _selectedCategoryId = story.categoryId;
               _coverImageUrlController.text = story.coverImageUrl ?? '';
             });
           }
@@ -109,7 +109,7 @@ class _StoryEditorState extends ConsumerState<StoryEditor> {
           // This will trigger a refresh when returning to the story list
           Future.microtask(() {
             if (mounted) {
-              ref.invalidate(storiesProvider);
+              ref.invalidate(storiesNotifierProvider);
             }
           });
         }
@@ -284,9 +284,8 @@ class _StoryEditorState extends ConsumerState<StoryEditor> {
         Text('Category', style: theme.textTheme.titleMedium),
         const SizedBox(height: 4),
         CategorySelector(
-          selectedCategory: _selectedCategoryName,
-          onCategorySelected: (name) =>
-              setState(() => _selectedCategoryName = name),
+          selectedCategoryId: _selectedCategoryId,
+          onCategorySelected: (id) => setState(() => _selectedCategoryId = id),
         ),
         ResponsiveGap.xs(),
         Text('Cover Image URL (Optional)', style: theme.textTheme.titleMedium),
@@ -374,7 +373,7 @@ class _StoryEditorState extends ConsumerState<StoryEditor> {
           title: _titleController.text,
           language: _selectedLanguageCode!,
           readingLevel: _selectedReadingLevel!,
-          categoryId: _getCategoryIdByName(_selectedCategoryName),
+          categoryId: _selectedCategoryId,
           coverImageUrl: _coverImageUrlController.text.isEmpty
               ? null
               : _coverImageUrlController.text,
@@ -391,7 +390,7 @@ class _StoryEditorState extends ConsumerState<StoryEditor> {
           title: _titleController.text,
           language: _selectedLanguageCode,
           readingLevel: _selectedReadingLevel,
-          categoryId: _getCategoryIdByName(_selectedCategoryName),
+          categoryId: _selectedCategoryId,
           coverImageUrl: _coverImageUrlController.text.isEmpty
               ? null
               : _coverImageUrlController.text,
@@ -416,25 +415,5 @@ class _StoryEditorState extends ConsumerState<StoryEditor> {
     if (mounted) {
       ref.read(sectionsNotifierProvider.notifier).loadSections(storyId);
     }
-  }
-
-  int? _getCategoryIdByName(String? categoryName) {
-    if (categoryName == null) return null;
-    return switch (categoryName) {
-      'Adventure' => 1,
-      'Fantasy' => 2,
-      'Science' => 3,
-      _ => null,
-    };
-  }
-
-  String? _getCategoryNameById(int? categoryId) {
-    if (categoryId == null) return null;
-    return switch (categoryId) {
-      1 => 'Adventure',
-      2 => 'Fantasy',
-      3 => 'Science',
-      _ => null,
-    };
   }
 }

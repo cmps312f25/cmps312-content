@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hikayati/core/entities/section.dart';
-import 'package:hikayati/features/story_editor/repositories/story_repository_impl.dart';
+import 'package:hikayati/core/repositories/story_repository.dart';
 
 /// Provider for managing a single section being edited
 class SectionNotifier extends AsyncNotifier<Section?> {
@@ -13,7 +13,7 @@ class SectionNotifier extends AsyncNotifier<Section?> {
     state = const AsyncValue.loading();
 
     state = await AsyncValue.guard(() async {
-      final repository = ref.read(storyEditorRepositoryProvider);
+      final repository = ref.read(storyRepositoryProvider);
       return await repository.getSection(sectionId);
     });
   }
@@ -23,7 +23,7 @@ class SectionNotifier extends AsyncNotifier<Section?> {
     String? imageUrl,
     String? sectionText,
   }) async {
-    final repository = ref.read(storyEditorRepositoryProvider);
+    final repository = ref.read(storyRepositoryProvider);
     final newSection = await repository.addSection(
       storyId: storyId,
       imageUrl: imageUrl,
@@ -40,7 +40,7 @@ class SectionNotifier extends AsyncNotifier<Section?> {
     state = const AsyncValue.loading();
 
     state = await AsyncValue.guard(() async {
-      final repository = ref.read(storyEditorRepositoryProvider);
+      final repository = ref.read(storyRepositoryProvider);
       return await repository.updateSection(
         sectionId: sectionId,
         imageUrl: imageUrl,

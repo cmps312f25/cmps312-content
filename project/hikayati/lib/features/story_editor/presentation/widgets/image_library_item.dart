@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hikayati/core/theme/app_theme.dart';
-import '../utils/responsive_helper.dart';
+import 'package:hikayati/core/widgets/responsive_helper.dart';
 
 /// Widget for displaying an image in the library with selection state
 class ImageLibraryItem extends ConsumerWidget {

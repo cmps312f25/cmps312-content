@@ -3,16 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hikayati/core/database/database_helper.dart';
 import 'package:hikayati/core/providers/database_provider.dart';
 import 'package:hikayati/features/auth/presentation/providers/auth_provider.dart';
-import 'package:hikayati/features/story_editor/repositories/story_repository_contract.dart';
+import 'package:hikayati/core/repositories/story_repository_contract.dart';
 import 'package:hikayati/core/entities/story.dart';
 import 'package:hikayati/core/entities/section.dart';
 import 'package:hikayati/core/entities/quiz.dart';
+import 'package:hikayati/core/entities/category.dart';
 
-class StoryRepositoryImpl implements StoryRepositoryContract {
+class StoryRepository implements StoryRepositoryContract {
   final DatabaseHelper _dbHelper;
   final Ref _ref;
 
-  StoryRepositoryImpl(this._dbHelper, this._ref);
+  StoryRepository(this._dbHelper, this._ref);
 
   Future<int> _getCurrentUserId() async {
     final user = _ref.read(currentUserProvider);
@@ -22,6 +23,7 @@ class StoryRepositoryImpl implements StoryRepositoryContract {
     return user.id!;
   }
 
+  // ===== Story CRUD =====
   @override
   Future<Story> createStory({
     required String title,
@@ -33,7 +35,6 @@ class StoryRepositoryImpl implements StoryRepositoryContract {
     final db = await _dbHelper.database;
     final userId = await _getCurrentUserId();
 
-    // TODO: Remove the default quiz
     final storyData = {
       'author_id': userId,
       'title': title,
@@ -96,8 +97,68 @@ class StoryRepositoryImpl implements StoryRepositoryContract {
     return Story.fromJson(maps.first);
   }
 
+  // ===== Story Listing & Searching =====
+
   @override
-  Future<Story> getStoryForEdit(int storyId) async {
+  Future<List<Story>> getStories({
+    String? searchQuery,
+    int? categoryId,
+    String? readingLevel,
+    String? language,
+  }) async {
+    final db = await _dbHelper.database;
+
+    final conditions = <String>[];
+    final args = <dynamic>[];
+
+    if (searchQuery != null && searchQuery.isNotEmpty) {
+      conditions.add('title LIKE ?');
+      args.add('%$searchQuery%');
+    }
+
+    if (categoryId != null) {
+      conditions.add('category_id = ?');
+      args.add(categoryId);
+    }
+
+    if (readingLevel != null) {
+      conditions.add('reading_level = ?');
+      args.add(readingLevel);
+    }
+
+    if (language != null) {
+      conditions.add('language = ?');
+      args.add(language);
+    }
+
+    final maps = await db.query(
+      'stories',
+      where: conditions.isEmpty ? null : conditions.join(' AND '),
+      whereArgs: args.isEmpty ? null : args,
+      orderBy: 'created_at DESC',
+    );
+
+    return maps.map((json) => Story.fromJson(json)).toList();
+  }
+
+  @override
+  Future<List<Story>> searchStories(String query) async {
+    final db = await _dbHelper.database;
+
+    final maps = await db.query(
+      'stories',
+      where: 'title LIKE ?',
+      whereArgs: ['%$query%'],
+      orderBy: 'created_at DESC',
+    );
+
+    return maps.map((json) => Story.fromJson(json)).toList();
+  }
+
+  // ===== Story Retrieval =====
+
+  @override
+  Future<Story> getStory(int storyId) async {
     final db = await _dbHelper.database;
 
     final maps = await db.query(
@@ -112,6 +173,14 @@ class StoryRepositoryImpl implements StoryRepositoryContract {
 
     return Story.fromJson(maps.first);
   }
+
+  @override
+  Future<Story> getStoryById(int storyId) async {
+    // Delegate to getStory for consistency
+    return getStory(storyId);
+  }
+
+  // ===== Section Management =====
 
   @override
   Future<Section> addSection({
@@ -208,6 +277,8 @@ class StoryRepositoryImpl implements StoryRepositoryContract {
     return maps.map((json) => Section.fromJson(json)).toList();
   }
 
+  // ===== Quiz Management =====
+
   @override
   Future<Quiz?> getQuiz(int storyId) async {
     final db = await _dbHelper.database;
@@ -234,10 +305,19 @@ class StoryRepositoryImpl implements StoryRepositoryContract {
 
     return null;
   }
+
+  // ===== Category Management =====
+
+  @override
+  Future<List<Category>> getCategories() async {
+    final db = await _dbHelper.database;
+    final categoriesJson = await db.query('categories', orderBy: 'name ASC');
+    return categoriesJson.map((json) => Category.fromJson(json)).toList();
+  }
 }
 
-/// Provider for StoryEditorRepository
-final storyEditorRepositoryProvider = Provider<StoryRepositoryImpl>((ref) {
+/// Provider for StoryRepository
+final storyRepositoryProvider = Provider<StoryRepository>((ref) {
   final dbHelper = ref.watch(databaseHelperProvider);
-  return StoryRepositoryImpl(dbHelper, ref);
+  return StoryRepository(dbHelper, ref);
 });

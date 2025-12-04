@@ -773,26 +773,9 @@ extension AppColors on ColorScheme {
   Color get warning => AppTheme.warning;
   Color get info => AppTheme.info;
 
-  /// Story category colors
-  Color get categoryAdventure => AppTheme.accentYellow;
-  Color get categoryFantasy => AppTheme.primaryPurple;
-  Color get categoryScience => AppTheme.secondaryBlue;
-  Color get categoryFriendship => AppTheme.accentPink;
-  Color get categoryAnimal => AppTheme.success;
-
   /// User role colors
   Color get learnerColor => AppTheme.secondaryBlue;
   Color get educatorColor => AppTheme.primaryPurple;
-
-  /// Reading level colors (gradient from easy to advanced)
-  Color get levelKG1 => AppTheme.accentYellow;
-  Color get levelKG2 => AppTheme.accentYellowLight;
-  Color get levelYear1 => AppTheme.accentPink;
-  Color get levelYear2 => AppTheme.accentPinkLight;
-  Color get levelYear3 => AppTheme.secondaryBlue;
-  Color get levelYear4 => AppTheme.secondaryBlueLight;
-  Color get levelYear5 => AppTheme.primaryPurple;
-  Color get levelYear6 => AppTheme.primaryPurpleLight;
 
   /// Status colors
   Color get statusDraft => AppTheme.grey400;

@@ -48,7 +48,8 @@ class DatabaseHelper {
     await db.execute('''
       CREATE TABLE categories (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL UNIQUE
+        name TEXT NOT NULL UNIQUE,
+        icon TEXT NOT NULL
       )
     ''');
 
@@ -100,10 +101,30 @@ class DatabaseHelper {
     final batch = db.batch();
 
     // Seed Categories
-    batch.insert('categories', {'id': 1, 'name': 'Adventure'});
-    batch.insert('categories', {'id': 2, 'name': 'Fantasy'});
-    batch.insert('categories', {'id': 3, 'name': 'Science Fiction'});
-    batch.insert('categories', {'id': 4, 'name': 'Mystery'});
+    batch.insert('categories', {
+      'id': 1,
+      'name': 'Adventure',
+      'icon': 'explore',
+    });
+    batch.insert('categories', {
+      'id': 2,
+      'name': 'Fantasy',
+      'icon': 'auto_awesome',
+    });
+    batch.insert('categories', {'id': 3, 'name': 'Science', 'icon': 'science'});
+    batch.insert('categories', {
+      'id': 4,
+      'name': 'Friendship',
+      'icon': 'favorite',
+    });
+    batch.insert('categories', {'id': 5, 'name': 'Animal', 'icon': 'pets'});
+    batch.insert('categories', {'id': 6, 'name': 'Mystery', 'icon': 'search'});
+    batch.insert('categories', {
+      'id': 7,
+      'name': 'History',
+      'icon': 'history_edu',
+    });
+    batch.insert('categories', {'id': 8, 'name': 'Nature', 'icon': 'park'});
 
     // Seed Users (IDs will be auto-generated: 1, 2, 3, 4, 5)
     batch.insert('users', {
@@ -148,7 +169,7 @@ class DatabaseHelper {
       'cover_image_url':
           'https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-images/story2.png',
       'reading_level': 'G1',
-      'category_id': 3, // Science Fiction
+      'category_id': 3, // Science
       'author_id': 2,
       'created_at': DateTime.now().toIso8601String(),
     });
@@ -157,7 +178,7 @@ class DatabaseHelper {
       'title': 'The Missing Star',
       'language': 'Arabic',
       'reading_level': 'G2',
-      'category_id': 4, // Mystery
+      'category_id': 6, // Mystery
       'author_id': 2,
       'cover_image_url':
           'https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-images/story3.png',

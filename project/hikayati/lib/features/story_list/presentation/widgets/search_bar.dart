@@ -1,4 +1,4 @@
-import 'package:hikayati/core/utils/responsive_helper.dart';
+import 'package:hikayati/core/widgets/responsive_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';

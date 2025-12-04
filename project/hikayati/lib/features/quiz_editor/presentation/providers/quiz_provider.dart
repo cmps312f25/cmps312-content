@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hikayati/core/entities/quiz.dart';
-import 'package:hikayati/features/story_editor/repositories/story_repository_impl.dart';
+import 'package:hikayati/core/repositories/story_repository.dart';
 
 /// Provider for managing quiz of a story
 class QuizNotifier extends AsyncNotifier<Quiz?> {
@@ -13,7 +13,7 @@ class QuizNotifier extends AsyncNotifier<Quiz?> {
     state = const AsyncValue.loading();
 
     state = await AsyncValue.guard(() async {
-      final repository = ref.read(storyEditorRepositoryProvider);
+      final repository = ref.read(storyRepositoryProvider);
       return await repository.getQuiz(storyId);
     });
   }
@@ -22,7 +22,7 @@ class QuizNotifier extends AsyncNotifier<Quiz?> {
     state = const AsyncValue.loading();
 
     state = await AsyncValue.guard(() async {
-      final repository = ref.read(storyEditorRepositoryProvider);
+      final repository = ref.read(storyRepositoryProvider);
       await repository.updateStory(storyId: storyId, quiz: quiz);
       return quiz;
     });

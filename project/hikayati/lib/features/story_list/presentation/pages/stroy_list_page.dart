@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hikayati/core/widgets/story_card_widget.dart';
 import 'package:hikayati/core/widgets/empty_state_widget.dart';
 import 'package:hikayati/core/widgets/loading_widget.dart';
 import 'package:hikayati/core/widgets/error_display_widget.dart';
 import 'package:hikayati/features/story_list/presentation/providers/stories_provider.dart';
+import 'package:hikayati/features/story_list/presentation/widgets/story_card.dart';
 import 'package:hikayati/features/story_list/presentation/widgets/search_bar.dart'
     as custom;
 import 'package:hikayati/features/story_list/presentation/widgets/filter_sheet.dart';
@@ -29,13 +29,13 @@ class _StoryListPageState extends ConsumerState<StoryListPage> {
     super.initState();
     // Refresh stories whenever this page is initialized
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.invalidate(storiesProvider);
+      ref.invalidate(storiesNotifierProvider);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final storiesAsync = ref.watch(storiesProvider);
+    final storiesAsync = ref.watch(storiesNotifierProvider);
     final currentUser = ref.watch(currentUserProvider);
     final theme = Theme.of(context);
 
@@ -101,9 +101,13 @@ class _StoryListPageState extends ConsumerState<StoryListPage> {
                         hintText: 'Search stories...',
                         onSearchChanged: (query) {
                           if (query.isEmpty) {
-                            ref.read(storiesProvider.notifier).refresh();
+                            ref
+                                .read(storiesNotifierProvider.notifier)
+                                .refresh();
                           } else {
-                            ref.read(storiesProvider.notifier).search(query);
+                            ref
+                                .read(storiesNotifierProvider.notifier)
+                                .search(query);
                           }
                         },
                       ),
@@ -153,7 +157,7 @@ class _StoryListPageState extends ConsumerState<StoryListPage> {
         loading: () => const LoadingWidget(message: 'Loading stories...'),
         error: (error, stack) => ErrorDisplayWidget(
           message: error.toString(),
-          onRetry: () => ref.read(storiesProvider.notifier).refresh(),
+          onRetry: () => ref.read(storiesNotifierProvider.notifier).refresh(),
         ),
       ),
       floatingActionButton: currentUser != null
@@ -176,7 +180,7 @@ class _StoryListPageState extends ConsumerState<StoryListPage> {
         initialCategoryIds: _selectedCategoryIds,
         onApply: (levels, categoryIds) {
           ref
-              .read(storiesProvider.notifier)
+              .read(storiesNotifierProvider.notifier)
               .filter(
                 readingLevels: levels.map((e) => e.value).toList(),
                 categoryIds: categoryIds.toList(),
@@ -191,7 +195,7 @@ class _StoryListPageState extends ConsumerState<StoryListPage> {
           });
         },
         onReset: () {
-          ref.read(storiesProvider.notifier).refresh();
+          ref.read(storiesNotifierProvider.notifier).refresh();
           setState(() {
             _selectedLevels.clear();
             _selectedCategoryIds.clear();
@@ -232,7 +236,7 @@ class _StoryListPageState extends ConsumerState<StoryListPage> {
     try {
       // TODO: Implement delete functionality
       // Refresh the stories list
-      ref.read(storiesProvider.notifier).refresh();
+      ref.read(storiesNotifierProvider.notifier).refresh();
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

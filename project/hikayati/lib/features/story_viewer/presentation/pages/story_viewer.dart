@@ -40,10 +40,18 @@ class _StoryViewerState extends ConsumerState<StoryViewer> {
   @override
   Widget build(BuildContext context) {
     final sectionsAsync = ref.watch(storySectionsProvider(widget.storyId));
+    final storyAsync = ref.watch(storyProvider(widget.storyId));
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Story Viewer'), centerTitle: true),
+      appBar: AppBar(
+        title: storyAsync.when(
+          data: (story) => Text(story.title),
+          loading: () => const Text('Story Viewer'),
+          error: (_, __) => const Text('Story Viewer'),
+        ),
+        centerTitle: true,
+      ),
       body: sectionsAsync.when(
         loading: () => const LoadingWidget(message: 'Loading story...'),
         error: (error, stack) => ErrorDisplayWidget(
