@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hikayati/core/widgets/loading_widget.dart';
 import 'package:hikayati/core/widgets/error_display_widget.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class StoryViewer extends ConsumerStatefulWidget {
   final int storyId;
@@ -14,15 +15,41 @@ class StoryViewer extends ConsumerStatefulWidget {
 
 class _StoryViewerState extends ConsumerState<StoryViewer> {
   final PageController _pageController = PageController();
+  final AudioPlayer _audioPlayer = AudioPlayer();
   int _currentPage = 0;
+  bool _isPlaying = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
     _pageController.addListener(() {
-      setState(() {
-        _currentPage = _pageController.page?.round() ?? 0;
-      });
+      final newPage = _pageController.page?.round() ?? 0;
+      if (newPage != _currentPage) {
+        _stopAudio();
+        setState(() {
+          _currentPage = newPage;
+        });
+      }
+    });
+
+    // Listen to player state changes
+    _audioPlayer.onPlayerStateChanged.listen((state) {
+      if (mounted) {
+        setState(() {
+          _isPlaying = state == PlayerState.playing;
+          _isLoading = false;
+        });
+      }
+    });
+
+    // Listen to player completion
+    _audioPlayer.onPlayerComplete.listen((_) {
+      if (mounted) {
+        setState(() {
+          _isPlaying = false;
+        });
+      }
     });
 
     // Invalidate the sections provider to fetch fresh data
@@ -33,8 +60,51 @@ class _StoryViewerState extends ConsumerState<StoryViewer> {
 
   @override
   void dispose() {
+    _audioPlayer.dispose();
     _pageController.dispose();
     super.dispose();
+  }
+
+  Future<void> _playAudio(String audioUrl) async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      await _audioPlayer.stop();
+      await _audioPlayer.play(UrlSource(audioUrl));
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to play audio: $e')));
+      }
+    }
+  }
+
+  Future<void> _pauseAudio() async {
+    await _audioPlayer.pause();
+  }
+
+  Future<void> _stopAudio() async {
+    await _audioPlayer.stop();
+    if (mounted) {
+      setState(() {
+        _isPlaying = false;
+      });
+    }
+  }
+
+  Future<void> _toggleAudio(String? audioUrl) async {
+    if (audioUrl == null) return;
+
+    if (_isPlaying) {
+      await _pauseAudio();
+    } else {
+      await _playAudio(audioUrl);
+    }
   }
 
   @override
@@ -98,6 +168,30 @@ class _StoryViewerState extends ConsumerState<StoryViewer> {
                               ),
                             ),
                           ),
+                          // Audio player controls
+                          if (section.audioUrl != null)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24.0,
+                                vertical: 16.0,
+                              ),
+                              child: Center(
+                                child: _isLoading
+                                    ? const CircularProgressIndicator()
+                                    : FilledButton.icon(
+                                        onPressed: () =>
+                                            _toggleAudio(section.audioUrl),
+                                        icon: Icon(
+                                          _isPlaying
+                                              ? Icons.pause
+                                              : Icons.play_arrow,
+                                        ),
+                                        label: Text(
+                                          _isPlaying ? 'Pause' : 'Play Audio',
+                                        ),
+                                      ),
+                              ),
+                            ),
                         ],
                       ),
                     );
