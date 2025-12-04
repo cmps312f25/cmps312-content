@@ -22,6 +22,7 @@ class QuizEditor extends ConsumerStatefulWidget {
 
 class _QuizEditorState extends ConsumerState<QuizEditor> {
   late List<Question> _questions;
+  int? _quizId;
   bool _hasUnsavedChanges = false;
 
   @override
@@ -193,7 +194,11 @@ class _QuizEditorState extends ConsumerState<QuizEditor> {
     if (!_validateQuiz()) return false;
 
     HapticFeedback.heavyImpact();
-    final updatedQuiz = Quiz(storyId: widget.storyId, questions: _questions);
+    final updatedQuiz = Quiz(
+      id: _quizId,
+      storyId: widget.storyId,
+      questions: _questions,
+    );
 
     try {
       await ref
@@ -244,7 +249,10 @@ class _QuizEditorState extends ConsumerState<QuizEditor> {
     ref.listen(quizNotifierProvider, (previous, next) {
       next.whenData((quiz) {
         if (quiz != null && _questions.isEmpty) {
-          setState(() => _questions = quiz.questions.toList());
+          setState(() {
+            _quizId = quiz.id;
+            _questions = quiz.questions.toList();
+          });
         }
       });
     });
