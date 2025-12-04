@@ -10,6 +10,8 @@ import 'package:hikayati/features/quiz_editor/providers/quiz_provider.dart';
 import 'package:hikayati/features/quiz_editor/widgets/quiz_top_bar.dart';
 import 'package:hikayati/features/quiz_editor/widgets/quiz_empty_state.dart';
 import 'package:hikayati/features/quiz_editor/widgets/question_editor_card.dart';
+import 'package:hikayati/features/quiz_viewer/providers/quiz_provider.dart'
+    as viewer;
 
 class QuizEditor extends ConsumerStatefulWidget {
   final int storyId;
@@ -36,17 +38,53 @@ class _QuizEditorState extends ConsumerState<QuizEditor> {
     });
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   void _markAsChanged() {
     if (!_hasUnsavedChanges) {
       setState(() {
         _hasUnsavedChanges = true;
       });
     }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: AppTheme.error),
+    );
+  }
+
+  void _showSuccess(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle, color: AppTheme.white),
+            const SizedBox(width: 12),
+            Text(message),
+          ],
+        ),
+        backgroundColor: AppTheme.success,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
+  }
+
+  String get _questionCountText {
+    final count = _questions.length;
+    return '$count Question${count != 1 ? 's' : ''}';
+  }
+
+  Widget _buildQuestionCount() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Text(
+        _questionCountText,
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: AppTheme.grey900,
+        ),
+      ),
+    );
   }
 
   void _addQuestion() {
@@ -133,56 +171,31 @@ class _QuizEditorState extends ConsumerState<QuizEditor> {
 
   bool _validateQuiz() {
     if (_questions.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please add at least one question'),
-          backgroundColor: AppTheme.error,
-        ),
-      );
+      _showError('Please add at least one question');
       return false;
     }
 
     for (var i = 0; i < _questions.length; i++) {
       final question = _questions[i];
+      final questionNum = i + 1;
+
       if (question.text.trim().isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Question ${i + 1} is empty'),
-            backgroundColor: AppTheme.error,
-          ),
-        );
+        _showError('Question $questionNum is empty');
         return false;
       }
 
       if (question.options.length < 2) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Question ${i + 1} needs at least 2 options'),
-            backgroundColor: AppTheme.error,
-          ),
-        );
+        _showError('Question $questionNum needs at least 2 options');
         return false;
       }
 
       if (question.options.any((opt) => opt.text.trim().isEmpty)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Question ${i + 1} has empty options'),
-            backgroundColor: AppTheme.error,
-          ),
-        );
+        _showError('Question $questionNum has empty options');
         return false;
       }
 
       if (!question.options.any((opt) => opt.isCorrect)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Question ${i + 1} needs at least one correct answer',
-            ),
-            backgroundColor: AppTheme.error,
-          ),
-        );
+        _showError('Question $questionNum needs at least one correct answer');
         return false;
       }
     }
@@ -205,41 +218,30 @@ class _QuizEditorState extends ConsumerState<QuizEditor> {
           .read(quizNotifierProvider.notifier)
           .updateQuiz(widget.storyId, updatedQuiz);
 
-      if (mounted) {
-        setState(() => _hasUnsavedChanges = false);
+      if (!mounted) return false;
 
-        if (closeAfterSave) {
-          context.pop();
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  const Icon(Icons.check_circle, color: AppTheme.white),
-                  const SizedBox(width: 12),
-                  const Text('Quiz saved successfully!'),
-                ],
-              ),
-              backgroundColor: AppTheme.success,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          );
-        }
+      setState(() => _hasUnsavedChanges = false);
+
+      // Invalidate quiz viewer provider to reload fresh data
+      ref.invalidate(viewer.quizProvider(widget.storyId));
+
+      if (closeAfterSave) {
+        context.pop();
+      } else {
+        _showSuccess('Quiz saved successfully!');
       }
       return true;
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to save quiz: $e'),
-            backgroundColor: AppTheme.error,
-          ),
-        );
+        _showError('Failed to save quiz: $e');
       }
       return false;
+    }
+  }
+
+  Future<void> _handleBack() async {
+    if (await _onWillPop() && context.mounted) {
+      context.pop();
     }
   }
 
@@ -261,9 +263,7 @@ class _QuizEditorState extends ConsumerState<QuizEditor> {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
-        if (await _onWillPop() && context.mounted) {
-          context.pop();
-        }
+        await _handleBack();
       },
       child: Scaffold(
         body: SafeArea(
@@ -271,11 +271,7 @@ class _QuizEditorState extends ConsumerState<QuizEditor> {
             children: [
               QuizTopBar(
                 hasUnsavedChanges: _hasUnsavedChanges,
-                onBack: () async {
-                  if (await _onWillPop() && context.mounted) {
-                    context.pop();
-                  }
-                },
+                onBack: _handleBack,
                 onSave: _saveQuiz,
               ),
               Expanded(
@@ -283,65 +279,43 @@ class _QuizEditorState extends ConsumerState<QuizEditor> {
                     ? SingleChildScrollView(
                         child: Column(
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                '${_questions.length} Question${_questions.length != 1 ? 's' : ''}',
-                                style: Theme.of(context).textTheme.titleMedium
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                      color: AppTheme.grey900,
-                                    ),
-                              ),
-                            ),
+                            _buildQuestionCount(),
                             const QuizEmptyState(),
                           ],
                         ),
                       )
-                    : CustomScrollView(
-                        slivers: [
-                          SliverToBoxAdapter(
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Text(
-                                '${_questions.length} Question${_questions.length != 1 ? 's' : ''}',
-                                style: Theme.of(context).textTheme.titleMedium
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                      color: AppTheme.grey900,
-                                    ),
-                              ),
-                            ),
-                          ),
-                          SliverPadding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            sliver: SliverList(
-                              delegate: SliverChildBuilderDelegate((
-                                context,
-                                index,
-                              ) {
-                                return QuestionEditorCard(
-                                  key: ValueKey('question_$index'),
-                                  questionNumber: index + 1,
-                                  question: _questions[index],
-                                  onChanged: (Question updatedQuestion) =>
-                                      _updateQuestion(index, updatedQuestion),
-                                  onDelete: () => _deleteQuestion(index),
-                                );
-                              }, childCount: _questions.length),
-                            ),
-                          ),
-                          const SliverToBoxAdapter(
-                            child: SizedBox(height: 100),
-                          ),
-                        ],
-                      ),
+                    : _buildQuestionsList(),
               ),
             ],
           ),
         ),
         floatingActionButton: _buildAddQuestionButton(),
       ),
+    );
+  }
+
+  Widget _buildQuestionsList() {
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(child: _buildQuestionCount()),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          sliver: SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) => QuestionEditorCard(
+                key: ValueKey('question_$index'),
+                questionNumber: index + 1,
+                question: _questions[index],
+                onChanged: (updatedQuestion) =>
+                    _updateQuestion(index, updatedQuestion),
+                onDelete: () => _deleteQuestion(index),
+              ),
+              childCount: _questions.length,
+            ),
+          ),
+        ),
+        const SliverToBoxAdapter(child: SizedBox(height: 100)),
+      ],
     );
   }
 

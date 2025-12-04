@@ -8,12 +8,12 @@ import 'package:hikayati/features/quiz_viewer/widgets/quiz_progress_bar.dart';
 import 'package:hikayati/features/quiz_viewer/widgets/quiz_question_card.dart';
 import 'package:hikayati/features/quiz_viewer/widgets/quiz_navigation_buttons.dart';
 import 'package:hikayati/features/quiz_viewer/widgets/quiz_completion_view.dart';
+import 'package:hikayati/features/quiz_viewer/providers/quiz_provider.dart';
 
 class QuizViewer extends ConsumerStatefulWidget {
-  final Quiz quiz;
   final int storyId;
 
-  const QuizViewer({super.key, required this.quiz, required this.storyId});
+  const QuizViewer({super.key, required this.storyId});
 
   @override
   ConsumerState<QuizViewer> createState() => _QuizViewerState();
@@ -36,7 +36,9 @@ class _QuizViewerState extends ConsumerState<QuizViewer> {
 
   void _selectOption(int optionIndex) {
     if (!(_submittedQuestions[_currentQuestionIndex] ?? false)) {
-      final question = widget.quiz.questions[_currentQuestionIndex];
+      final quiz = ref.read(quizProvider(widget.storyId)).value;
+      if (quiz == null) return;
+      final question = quiz.questions[_currentQuestionIndex];
 
       setState(() {
         if (question.isMultiSelect) {
@@ -77,7 +79,9 @@ class _QuizViewerState extends ConsumerState<QuizViewer> {
     final answer = _userAnswers[questionIndex];
     if (answer == null) return false;
 
-    final question = widget.quiz.questions[questionIndex];
+    final quiz = ref.read(quizProvider(widget.storyId)).value;
+    if (quiz == null) return false;
+    final question = quiz.questions[questionIndex];
     if (question.isMultiSelect) {
       final selectedIndices = answer as Set<int>;
       final correctIndices = question.options
@@ -113,7 +117,10 @@ class _QuizViewerState extends ConsumerState<QuizViewer> {
       return;
     }
 
-    if (_currentQuestionIndex < widget.quiz.questions.length - 1) {
+    final quiz = ref.read(quizProvider(widget.storyId)).value;
+    if (quiz == null) return;
+
+    if (_currentQuestionIndex < quiz.questions.length - 1) {
       setState(() {
         _currentQuestionIndex++;
       });
@@ -145,8 +152,44 @@ class _QuizViewerState extends ConsumerState<QuizViewer> {
 
   @override
   Widget build(BuildContext context) {
+    final quizAsync = ref.watch(quizProvider(widget.storyId));
+
+    return quizAsync.when(
+      data: (quiz) {
+        if (quiz == null) {
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: AppTheme.primaryPurple,
+              foregroundColor: AppTheme.white,
+              title: const Text('Quiz'),
+            ),
+            body: const Center(child: Text('No quiz available for this story')),
+          );
+        }
+        return _buildQuizScaffold(context, quiz);
+      },
+      loading: () => Scaffold(
+        appBar: AppBar(
+          backgroundColor: AppTheme.primaryPurple,
+          foregroundColor: AppTheme.white,
+          title: const Text('Quiz'),
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      ),
+      error: (error, _) => Scaffold(
+        appBar: AppBar(
+          backgroundColor: AppTheme.primaryPurple,
+          foregroundColor: AppTheme.white,
+          title: const Text('Quiz'),
+        ),
+        body: Center(child: Text('Error loading quiz: $error')),
+      ),
+    );
+  }
+
+  Widget _buildQuizScaffold(BuildContext context, Quiz quiz) {
     final theme = Theme.of(context);
-    final progress = (_currentQuestionIndex + 1) / widget.quiz.questions.length;
+    final progress = (_currentQuestionIndex + 1) / quiz.questions.length;
 
     return Scaffold(
       appBar: AppBar(
@@ -181,17 +224,17 @@ class _QuizViewerState extends ConsumerState<QuizViewer> {
               ? QuizCompletionView(
                   correctAnswers: _correctAnswers,
                   wrongAnswers: _wrongAnswers,
-                  totalQuestions: widget.quiz.questions.length,
+                  totalQuestions: quiz.questions.length,
                   onRestart: _restartQuiz,
                 )
-              : _buildQuizView(progress),
+              : _buildQuizView(quiz, progress),
         ),
       ),
     );
   }
 
-  Widget _buildQuizView(double progress) {
-    final question = widget.quiz.questions[_currentQuestionIndex];
+  Widget _buildQuizView(Quiz quiz, double progress) {
+    final question = quiz.questions[_currentQuestionIndex];
     final isQuestionSubmitted =
         _submittedQuestions[_currentQuestionIndex] ?? false;
 
@@ -199,7 +242,7 @@ class _QuizViewerState extends ConsumerState<QuizViewer> {
       children: [
         QuizProgressBar(
           currentQuestion: _currentQuestionIndex + 1,
-          totalQuestions: widget.quiz.questions.length,
+          totalQuestions: quiz.questions.length,
           progress: progress,
         ),
         Expanded(
@@ -212,8 +255,7 @@ class _QuizViewerState extends ConsumerState<QuizViewer> {
         ),
         QuizNavigationButtons(
           hasSelectedAnswer: _hasSelectedAnswer(),
-          isLastQuestion:
-              _currentQuestionIndex == widget.quiz.questions.length - 1,
+          isLastQuestion: _currentQuestionIndex == quiz.questions.length - 1,
           isQuestionSubmitted: isQuestionSubmitted,
           canGoBack: _currentQuestionIndex > 0,
           onNext: _nextQuestion,
