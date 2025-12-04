@@ -153,37 +153,27 @@ class DatabaseHelper {
       'created_at': DateTime.now().toIso8601String(),
     });
 
-    // Seed Stories (author_id=2 which is creator@hikayati.com)
+    // Seed Stories
     batch.insert('stories', {
       'title': 'The Whispering Woods',
       'language': 'English',
       'cover_image_url':
-          'https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-images/story1.png',
+          'https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story1/1.1.png',
       'reading_level': 'KG2',
       'category_id': 1, // Adventure
       'author_id': 2,
-      'created_at': DateTime.now().toIso8601String(),
-    });
-    batch.insert('stories', {
-      'title': 'Galaxy Explorers',
-      'language': 'English',
-      'cover_image_url':
-          'https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-images/story2.png',
-      'reading_level': 'G1',
-      'category_id': 3, // Science
-      'author_id': 2,
+      'quiz': quizExample,
       'created_at': DateTime.now().toIso8601String(),
     });
 
     batch.insert('stories', {
-      'title': 'The Missing Star',
-      'language': 'Arabic',
-      'reading_level': 'G2',
-      'category_id': 6, // Mystery
-      'author_id': 2,
+      'title': 'Galaxy Explorers',
+      'language': 'English',
       'cover_image_url':
-          'https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-images/story3.png',
-      'quiz': quizExample,          
+          'https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story2/2.1.png',
+      'reading_level': 'G1',
+      'category_id': 3, // Science
+      'author_id': 2,
       'created_at': DateTime.now().toIso8601String(),
     });
 
@@ -191,7 +181,7 @@ class DatabaseHelper {
     batch.insert('sections', {
       'story_id': 1,
       'image_url':
-          'https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-images/story1.png',
+          'https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story1/1.1.png',
       'section_text':
           'In the heart of the Whispering Woods, a secret was kept.',
       'created_at': DateTime.now().toIso8601String(),
@@ -201,17 +191,19 @@ class DatabaseHelper {
       'section_text': 'A young fox named Finn decided to uncover it.',
       'created_at': DateTime.now().toIso8601String(),
     });
+
     batch.insert('sections', {
       'story_id': 2,
       'image_url':
-          'https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-images/story2.png',
+          'https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story2/2.1.png',
       'section_text': 'Leo and his robot friend Sparky blasted off into space.',
       'created_at': DateTime.now().toIso8601String(),
     });
+
     batch.insert('sections', {
-      'story_id': 4,
+      'story_id': 2,
       'image_url':
-          'https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-images/story4.png',
+          'https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story2/2.2.png',
       'section_text': 'كان هناك نجم مفقود في سماء الليل.',
       'created_at': DateTime.now().toIso8601String(),
     });
