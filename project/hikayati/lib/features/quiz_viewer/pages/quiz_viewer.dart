@@ -39,7 +39,7 @@ class _QuizViewerState extends ConsumerState<QuizViewer> {
       final question = widget.quiz.questions[_currentQuestionIndex];
 
       setState(() {
-        if (question.allowMultipleAnswers) {
+        if (question.isMultiSelect) {
           final currentAnswers =
               _userAnswers[_currentQuestionIndex] as Set<int>?;
           if (currentAnswers == null) {
@@ -78,7 +78,7 @@ class _QuizViewerState extends ConsumerState<QuizViewer> {
     if (answer == null) return false;
 
     final question = widget.quiz.questions[questionIndex];
-    if (question.allowMultipleAnswers) {
+    if (question.isMultiSelect) {
       final selectedIndices = answer as Set<int>;
       final correctIndices = question.options
           .asMap()

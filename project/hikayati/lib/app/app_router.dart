@@ -1,5 +1,5 @@
 import 'package:hikayati/features/story_viewer/pages/story_viewer.dart';
-import 'package:hikayati/features/quiz_viewer/providers/story_quiz_provider.dart';
+import 'package:hikayati/features/quiz_viewer/providers/quiz_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +38,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 
               return Consumer(
                 builder: (context, ref, _) {
-                  final quizAsync = ref.watch(storyQuizProvider(storyId));
+                  final quizAsync = ref.watch(quizProvider(storyId));
 
                   return quizAsync.when(
                     data: (quiz) {

@@ -57,7 +57,7 @@ class QuizTopBar extends StatelessWidget {
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: AppTheme.accentYellow.withOpacity(0.3),
+                      color: AppTheme.accentYellow.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(

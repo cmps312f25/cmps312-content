@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hikayati/core/database/database_helper.dart';
 import 'package:hikayati/core/providers/database_provider.dart';
@@ -6,7 +5,6 @@ import 'package:hikayati/features/auth/presentation/providers/auth_provider.dart
 import 'package:hikayati/core/repositories/story_repository_contract.dart';
 import 'package:hikayati/core/entities/story.dart';
 import 'package:hikayati/core/entities/section.dart';
-import 'package:hikayati/core/entities/quiz.dart';
 import 'package:hikayati/core/entities/category.dart';
 
 class StoryRepository implements StoryRepositoryContract {
@@ -60,7 +58,6 @@ class StoryRepository implements StoryRepositoryContract {
     String? readingLevel,
     int? categoryId,
     String? coverImageUrl,
-    Quiz? quiz,
   }) async {
     final db = await _dbHelper.database;
 
@@ -73,13 +70,6 @@ class StoryRepository implements StoryRepositoryContract {
     if (readingLevel != null) updateData['reading_level'] = readingLevel;
     if (categoryId != null) updateData['category_id'] = categoryId;
     if (coverImageUrl != null) updateData['cover_image_url'] = coverImageUrl;
-    if (quiz != null) {
-      // Use the quiz's toJson method to properly serialize all fields including
-      // allowMultipleAnswers for each question
-      final quizJson = quiz.toJson();
-      // Store as a list with the metadata and questions
-      updateData['quiz'] = jsonEncode(quizJson);
-    }
 
     await db.update(
       'stories',
@@ -286,26 +276,6 @@ class StoryRepository implements StoryRepositoryContract {
     );
 
     return maps.map((json) => Section.fromJson(json)).toList();
-  }
-
-  // ===== Quiz Management =====
-  @override
-  Future<Quiz?> getQuiz(int storyId) async {
-    final db = await _dbHelper.database;
-
-    final maps = await db.query(
-      'stories',
-      columns: ['quiz'],
-      where: 'id = ?',
-      whereArgs: [storyId],
-    );
-
-    if (maps.isEmpty || maps.first['quiz'] == null) {
-      return null;
-    }
-
-    final quizData = jsonDecode(maps.first['quiz'] as String);
-    return Quiz.fromJson(quizData as Map<String, dynamic>);
   }
 
   // ===== Category Management =====

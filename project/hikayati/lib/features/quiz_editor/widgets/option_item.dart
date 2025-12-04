@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:hikayati/core/entities/quiz.dart';
+import 'package:hikayati/core/entities/quiz_option.dart';
 import 'package:hikayati/core/theme/app_theme.dart';
 
 class OptionItem extends StatelessWidget {
   final int index;
-  final QuizOption option;
+  final Option option;
   final TextEditingController controller;
   final ValueChanged<String> onTextChanged;
   final VoidCallback onToggleCorrect;

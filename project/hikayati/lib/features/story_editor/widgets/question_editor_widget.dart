@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hikayati/core/entities/quiz.dart';
+import 'package:hikayati/core/entities/quiz_question.dart';
+import 'package:hikayati/core/entities/quiz_option.dart';
 
 class QuestionEditorWidget extends StatefulWidget {
   final Question question;
@@ -19,18 +20,23 @@ class QuestionEditorWidget extends StatefulWidget {
 
 class _QuestionEditorWidgetState extends State<QuestionEditorWidget> {
   late TextEditingController _questionController;
-  late List<QuizOption> _options;
+  late List<Option> _options;
 
   @override
   void initState() {
     super.initState();
-    _questionController = TextEditingController(text: widget.question.question);
+    _questionController = TextEditingController(text: widget.question.text);
     _options = widget.question.options.toList();
   }
 
   void _notifyChanged() {
     widget.onChanged(
-      Question(question: _questionController.text, options: _options),
+      Question(
+        quizId: widget.question.quizId,
+        text: _questionController.text,
+        options: _options,
+        isMultiSelect: widget.question.isMultiSelect,
+      ),
     );
   }
 
@@ -52,7 +58,7 @@ class _QuestionEditorWidgetState extends State<QuestionEditorWidget> {
             const SizedBox(height: 16),
             ..._options.asMap().entries.map((entry) {
               int index = entry.key;
-              QuizOption option = entry.value;
+              Option option = entry.value;
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: Row(
@@ -65,9 +71,11 @@ class _QuestionEditorWidgetState extends State<QuestionEditorWidget> {
                         ),
                         onChanged: (value) {
                           setState(() {
-                            _options[index] = QuizOption(
+                            _options[index] = Option(
                               text: value,
                               isCorrect: option.isCorrect,
+                              questionId: option.questionId,
+                              id: option.id,
                             );
                           });
                           _notifyChanged();
@@ -78,9 +86,11 @@ class _QuestionEditorWidgetState extends State<QuestionEditorWidget> {
                       value: option.isCorrect,
                       onChanged: (value) {
                         setState(() {
-                          _options[index] = QuizOption(
+                          _options[index] = Option(
                             text: option.text,
                             isCorrect: value ?? false,
+                            questionId: option.questionId,
+                            id: option.id,
                           );
                         });
                         _notifyChanged();
@@ -97,7 +107,9 @@ class _QuestionEditorWidgetState extends State<QuestionEditorWidget> {
                 ElevatedButton.icon(
                   onPressed: () {
                     setState(() {
-                      _options.add(QuizOption(text: '', isCorrect: false));
+                      _options.add(
+                        Option(text: '', isCorrect: false, questionId: 0),
+                      );
                     });
                     _notifyChanged();
                   },

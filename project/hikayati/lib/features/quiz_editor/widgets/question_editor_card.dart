@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hikayati/core/entities/quiz.dart';
+import 'package:hikayati/core/entities/quiz_question.dart';
+import 'package:hikayati/core/entities/quiz_option.dart';
 import 'package:hikayati/core/theme/app_theme.dart';
 import 'package:hikayati/features/quiz_editor/widgets/option_item.dart';
 
@@ -26,16 +27,16 @@ class QuestionEditorCard extends StatefulWidget {
 class _QuestionEditorCardState extends State<QuestionEditorCard> {
   late TextEditingController _questionController;
   late List<TextEditingController> _optionControllers;
-  late List<QuizOption> _options;
-  late bool _allowMultipleAnswers;
+  late List<Option> _options;
+  late bool _isMultiSelect;
   bool _isExpanded = true;
 
   @override
   void initState() {
     super.initState();
-    _questionController = TextEditingController(text: widget.question.question);
+    _questionController = TextEditingController(text: widget.question.text);
     _options = widget.question.options.toList();
-    _allowMultipleAnswers = widget.question.allowMultipleAnswers;
+    _isMultiSelect = widget.question.isMultiSelect;
     _optionControllers = _options
         .map((option) => TextEditingController(text: option.text))
         .toList();
@@ -53,9 +54,11 @@ class _QuestionEditorCardState extends State<QuestionEditorCard> {
   void _notifyChanged() {
     widget.onChanged(
       Question(
-        question: _questionController.text,
+        text: _questionController.text,
         options: _options,
-        allowMultipleAnswers: _allowMultipleAnswers,
+        isMultiSelect: _isMultiSelect,
+        quizId: widget.question.quizId,
+        id: widget.question.id,
       ),
     );
   }
@@ -63,7 +66,7 @@ class _QuestionEditorCardState extends State<QuestionEditorCard> {
   void _addOption() {
     HapticFeedback.lightImpact();
     setState(() {
-      _options.add(QuizOption(text: '', isCorrect: false));
+      _options.add(Option(text: '', isCorrect: false, questionId: 0));
       _optionControllers.add(TextEditingController());
     });
     _notifyChanged();
@@ -93,18 +96,22 @@ class _QuestionEditorCardState extends State<QuestionEditorCard> {
   void _toggleCorrect(int index) {
     HapticFeedback.lightImpact();
     setState(() {
-      if (_allowMultipleAnswers) {
+      if (_isMultiSelect) {
         // Multiple answers allowed - toggle this option
-        _options[index] = QuizOption(
+        _options[index] = Option(
           text: _options[index].text,
           isCorrect: !_options[index].isCorrect,
+          questionId: _options[index].questionId,
+          id: _options[index].id,
         );
       } else {
         // Single answer only - uncheck all others
         _options = _options.asMap().entries.map((entry) {
-          return QuizOption(
+          return Option(
             text: entry.value.text,
             isCorrect: entry.key == index,
+            questionId: entry.value.questionId,
+            id: entry.value.id,
           );
         }).toList();
       }
@@ -114,9 +121,11 @@ class _QuestionEditorCardState extends State<QuestionEditorCard> {
 
   void _updateOptionText(int index, String text) {
     setState(() {
-      _options[index] = QuizOption(
+      _options[index] = Option(
         text: text,
         isCorrect: _options[index].isCorrect,
+        questionId: _options[index].questionId,
+        id: _options[index].id,
       );
     });
     _notifyChanged();
@@ -159,7 +168,7 @@ class _QuestionEditorCardState extends State<QuestionEditorCard> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.black.withOpacity(0.08),
+            color: AppTheme.black.withValues(alpha: 0.08),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -181,8 +190,8 @@ class _QuestionEditorCardState extends State<QuestionEditorCard> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              AppTheme.primaryPurple.withOpacity(0.1),
-              AppTheme.accentPink.withOpacity(0.1),
+              AppTheme.primaryPurple.withValues(alpha: 0.1),
+              AppTheme.accentPink.withValues(alpha: 0.1),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -302,7 +311,7 @@ class _QuestionEditorCardState extends State<QuestionEditorCard> {
         color: AppTheme.grey50,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: _allowMultipleAnswers ? AppTheme.accentPink : AppTheme.grey200,
+          color: _isMultiSelect ? AppTheme.accentPink : AppTheme.grey200,
           width: 2,
         ),
       ),
@@ -311,9 +320,7 @@ class _QuestionEditorCardState extends State<QuestionEditorCard> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: _allowMultipleAnswers
-                  ? AppTheme.accentPink
-                  : AppTheme.grey400,
+              color: _isMultiSelect ? AppTheme.accentPink : AppTheme.grey400,
               borderRadius: BorderRadius.circular(10),
             ),
             child: const Icon(Icons.check_box, color: AppTheme.white, size: 20),
@@ -340,10 +347,10 @@ class _QuestionEditorCardState extends State<QuestionEditorCard> {
             ),
           ),
           Switch(
-            value: _allowMultipleAnswers,
+            value: _isMultiSelect,
             onChanged: (value) {
               setState(() {
-                _allowMultipleAnswers = value;
+                _isMultiSelect = value;
                 if (!value) {
                   // Ensure only one correct answer
                   final firstCorrect = _options.indexWhere(
@@ -351,9 +358,11 @@ class _QuestionEditorCardState extends State<QuestionEditorCard> {
                   );
                   if (firstCorrect != -1) {
                     _options = _options.asMap().entries.map((e) {
-                      return QuizOption(
+                      return Option(
                         text: e.value.text,
                         isCorrect: e.key == firstCorrect,
+                        questionId: e.value.questionId,
+                        id: e.value.id,
                       );
                     }).toList();
                   }

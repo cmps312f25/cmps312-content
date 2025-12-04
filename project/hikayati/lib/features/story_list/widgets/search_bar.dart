@@ -48,7 +48,7 @@ class _SearchBarState extends ConsumerState<SearchBar> {
       height: 48,
       decoration: BoxDecoration(
         color: isDark
-            ? theme.colorScheme.surface.withOpacity(0.5)
+            ? theme.colorScheme.surface.withValues(alpha: 0.5)
             : theme.colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(24),
       ),

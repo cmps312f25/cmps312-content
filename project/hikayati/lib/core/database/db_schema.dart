@@ -9,6 +9,9 @@ class DatabaseSchema {
   static const String tableCategories = 'categories';
   static const String tableStories = 'stories';
   static const String tableSections = 'sections';
+  static const String tableQuizzes = 'quizzes';
+  static const String tableQuestions = 'questions';
+  static const String tableOptions = 'options';
 
   /// Creates all database tables
   static Future<void> createTables(Database db) async {
@@ -16,6 +19,9 @@ class DatabaseSchema {
     await _createCategoriesTable(db);
     await _createStoriesTable(db);
     await _createSectionsTable(db);
+    await _createQuizzesTable(db);
+    await _createQuestionsTable(db);
+    await _createOptionsTable(db);
     await _createIndexes(db);
   }
 
@@ -57,7 +63,6 @@ class DatabaseSchema {
         reading_level TEXT NOT NULL,
         category_id INTEGER,
         author_id INTEGER NOT NULL,
-        quiz TEXT,
         created_at TEXT NOT NULL,
         updated_at TEXT,
         FOREIGN KEY (author_id) REFERENCES $tableUsers (id) ON DELETE CASCADE,
@@ -82,6 +87,45 @@ class DatabaseSchema {
     ''');
   }
 
+  /// Creates the quizzes table
+  static Future<void> _createQuizzesTable(Database db) async {
+    await db.execute('''
+      CREATE TABLE $tableQuizzes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        story_id INTEGER NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT,
+        FOREIGN KEY (story_id) REFERENCES $tableStories (id) ON DELETE CASCADE
+      )
+    ''');
+  }
+
+  /// Creates the questions table
+  static Future<void> _createQuestionsTable(Database db) async {
+    await db.execute('''
+      CREATE TABLE $tableQuestions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        quiz_id INTEGER NOT NULL,
+        text TEXT NOT NULL,
+        is_multi_select INTEGER NOT NULL DEFAULT 0,
+        FOREIGN KEY (quiz_id) REFERENCES $tableQuizzes (id) ON DELETE CASCADE
+      )
+    ''');
+  }
+
+  /// Creates the options table
+  static Future<void> _createOptionsTable(Database db) async {
+    await db.execute('''
+      CREATE TABLE $tableOptions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        question_id INTEGER NOT NULL,
+        text TEXT NOT NULL,
+        is_correct INTEGER NOT NULL DEFAULT 0,
+        FOREIGN KEY (question_id) REFERENCES $tableQuestions (id) ON DELETE CASCADE
+      )
+    ''');
+  }
+
   /// Creates indexes for optimized query performance
   ///
   /// Indexes are created on foreign keys and frequently queried columns
@@ -97,6 +141,15 @@ class DatabaseSchema {
     );
     await db.execute(
       'CREATE INDEX IF NOT EXISTS idx_users_email ON $tableUsers (email)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_quizzes_story ON $tableQuizzes (story_id)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_questions_quiz ON $tableQuestions (quiz_id)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_options_question ON $tableOptions (question_id)',
     );
   }
 

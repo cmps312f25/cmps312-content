@@ -402,7 +402,7 @@ class AppTheme {
     // Chip Theme
     chipTheme: ChipThemeData(
       backgroundColor: grey100,
-      selectedColor: primaryPurple.withOpacity(0.2),
+      selectedColor: primaryPurple.withValues(alpha: 0.2),
       deleteIconColor: grey600,
       labelStyle: lightTextTheme.labelMedium,
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -512,7 +512,7 @@ class AppTheme {
       elevation: 3,
       backgroundColor: surfaceLight,
       surfaceTintColor: primaryPurple,
-      indicatorColor: primaryPurple.withOpacity(0.2),
+      indicatorColor: primaryPurple.withValues(alpha: 0.2),
       labelTextStyle: WidgetStateProperty.all(lightTextTheme.labelSmall),
       iconTheme: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
@@ -556,7 +556,7 @@ class AppTheme {
     // Card Theme
     cardTheme: CardThemeData(
       elevation: 2,
-      shadowColor: black.withOpacity(0.3),
+      shadowColor: black.withValues(alpha: 0.3),
       surfaceTintColor: primaryPurpleLight,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       clipBehavior: Clip.antiAlias,
@@ -634,7 +634,7 @@ class AppTheme {
     // Chip Theme
     chipTheme: ChipThemeData(
       backgroundColor: grey800,
-      selectedColor: primaryPurpleLight.withOpacity(0.3),
+      selectedColor: primaryPurpleLight.withValues(alpha: 0.3),
       deleteIconColor: grey400,
       labelStyle: darkTextTheme.labelMedium,
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -719,7 +719,7 @@ class AppTheme {
       activeTrackColor: primaryPurpleLight,
       inactiveTrackColor: grey700,
       thumbColor: primaryPurpleLight,
-      overlayColor: primaryPurpleLight.withOpacity(0.3),
+      overlayColor: primaryPurpleLight.withValues(alpha: 0.3),
       valueIndicatorColor: primaryPurpleLight,
       valueIndicatorTextStyle: darkTextTheme.labelSmall!.copyWith(
         color: grey900,
@@ -744,7 +744,7 @@ class AppTheme {
       elevation: 3,
       backgroundColor: surfaceDark,
       surfaceTintColor: primaryPurpleLight,
-      indicatorColor: primaryPurpleLight.withOpacity(0.3),
+      indicatorColor: primaryPurpleLight.withValues(alpha: 0.3),
       labelTextStyle: WidgetStateProperty.all(darkTextTheme.labelSmall),
       iconTheme: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {

@@ -44,8 +44,8 @@ class ReadingLevelSelector extends ConsumerWidget {
               onLevelSelected(level);
             }
           },
-          backgroundColor: color.withOpacity(0.1),
-          selectedColor: color.withOpacity(0.3),
+          backgroundColor: color.withValues(alpha: 0.1),
+          selectedColor: color.withValues(alpha: 0.3),
           checkmarkColor: color,
           labelStyle: theme.textTheme.labelMedium?.copyWith(
             color: isSelected ? color : theme.colorScheme.onSurface,

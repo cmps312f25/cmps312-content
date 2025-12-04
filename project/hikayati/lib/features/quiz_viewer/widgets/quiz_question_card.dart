@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hikayati/core/theme/app_theme.dart';
-import 'package:hikayati/core/entities/quiz.dart';
+import 'package:hikayati/core/entities/quiz_question.dart';
 import 'package:hikayati/features/quiz_viewer/widgets/quiz_option_tile.dart';
 
 class QuizQuestionCard extends StatelessWidget {
@@ -32,13 +32,13 @@ class QuizQuestionCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            question.question,
+            question.text,
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
               color: AppTheme.grey900,
             ),
           ),
-          if (question.allowMultipleAnswers) ...[
+          if (question.isMultiSelect) ...[
             const SizedBox(height: 12),
             _buildMultipleAnswersBadge(theme),
           ],
@@ -53,7 +53,7 @@ class QuizQuestionCard extends StatelessWidget {
                   isSelected: isOptionSelected(index),
                   isSubmitted: isSubmitted,
                   isCorrectOption: question.options[index].isCorrect,
-                  allowMultipleAnswers: question.allowMultipleAnswers,
+                  isMultiSelect: question.isMultiSelect,
                   onTap: () => onSelectOption(index),
                 );
               },
@@ -68,7 +68,7 @@ class QuizQuestionCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: AppTheme.accentPink.withOpacity(0.1),
+        color: AppTheme.accentPink.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppTheme.accentPink),
       ),

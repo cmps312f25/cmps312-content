@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hikayati/core/theme/app_theme.dart';
 import 'package:hikayati/core/entities/quiz.dart';
+import 'package:hikayati/core/entities/quiz_question.dart';
+import 'package:hikayati/core/entities/quiz_option.dart';
 import 'package:hikayati/features/quiz_editor/providers/quiz_provider.dart';
 import 'package:hikayati/features/quiz_editor/widgets/quiz_top_bar.dart';
 import 'package:hikayati/features/quiz_editor/widgets/quiz_empty_state.dart';
@@ -51,12 +53,13 @@ class _QuizEditorState extends ConsumerState<QuizEditor> {
     setState(() {
       _questions.add(
         Question(
-          question: '',
+          quizId: 0, // Will be set when saved
+          text: '',
           options: [
-            QuizOption(text: '', isCorrect: true),
-            QuizOption(text: '', isCorrect: false),
+            Option(text: '', isCorrect: true, questionId: 0),
+            Option(text: '', isCorrect: false, questionId: 0),
           ],
-          allowMultipleAnswers: false,
+          isMultiSelect: false,
         ),
       );
     });
@@ -138,9 +141,9 @@ class _QuizEditorState extends ConsumerState<QuizEditor> {
       return false;
     }
 
-    for (int i = 0; i < _questions.length; i++) {
+    for (var i = 0; i < _questions.length; i++) {
       final question = _questions[i];
-      if (question.question.trim().isEmpty) {
+      if (question.text.trim().isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Question ${i + 1} is empty'),
@@ -190,7 +193,7 @@ class _QuizEditorState extends ConsumerState<QuizEditor> {
     if (!_validateQuiz()) return false;
 
     HapticFeedback.heavyImpact();
-    final updatedQuiz = Quiz(questions: _questions);
+    final updatedQuiz = Quiz(storyId: widget.storyId, questions: _questions);
 
     try {
       await ref
@@ -313,7 +316,7 @@ class _QuizEditorState extends ConsumerState<QuizEditor> {
                                   key: ValueKey('question_$index'),
                                   questionNumber: index + 1,
                                   question: _questions[index],
-                                  onChanged: (updatedQuestion) =>
+                                  onChanged: (Question updatedQuestion) =>
                                       _updateQuestion(index, updatedQuestion),
                                   onDelete: () => _deleteQuestion(index),
                                 );

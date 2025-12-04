@@ -6,8 +6,8 @@ class QuizOptionTile extends StatelessWidget {
   final bool isSelected;
   final bool isSubmitted;
   final bool isCorrectOption;
-  final bool allowMultipleAnswers;
-  final VoidCallback? onTap;
+  final bool isMultiSelect;
+  final VoidCallback onTap;
 
   const QuizOptionTile({
     super.key,
@@ -15,8 +15,8 @@ class QuizOptionTile extends StatelessWidget {
     required this.isSelected,
     required this.isSubmitted,
     required this.isCorrectOption,
-    required this.allowMultipleAnswers,
-    this.onTap,
+    required this.isMultiSelect,
+    required this.onTap,
   });
 
   @override
@@ -59,14 +59,14 @@ class QuizOptionTile extends StatelessWidget {
     if (isSubmitted) {
       if (isCorrectOption) {
         return _OptionColors(
-          backgroundColor: AppTheme.successLight.withOpacity(0.2),
+          backgroundColor: AppTheme.successLight.withValues(alpha: 0.2),
           borderColor: AppTheme.success,
           icon: Icons.check_circle,
           iconColor: AppTheme.success,
         );
       } else if (isSelected && !isCorrectOption) {
         return _OptionColors(
-          backgroundColor: AppTheme.errorLight.withOpacity(0.2),
+          backgroundColor: AppTheme.errorLight.withValues(alpha: 0.2),
           borderColor: AppTheme.error,
           icon: Icons.cancel,
           iconColor: AppTheme.error,
@@ -80,17 +80,17 @@ class QuizOptionTile extends StatelessWidget {
     } else {
       if (isSelected) {
         return _OptionColors(
-          backgroundColor: AppTheme.primaryPurple.withOpacity(0.1),
+          backgroundColor: AppTheme.primaryPurple.withValues(alpha: 0.1),
           borderColor: AppTheme.primaryPurple,
-          icon: allowMultipleAnswers ? Icons.check_box : null,
-          iconColor: allowMultipleAnswers ? AppTheme.primaryPurple : null,
+          icon: isMultiSelect ? Icons.check_box : null,
+          iconColor: isMultiSelect ? AppTheme.primaryPurple : null,
         );
       } else {
         return _OptionColors(
           backgroundColor: AppTheme.white,
           borderColor: AppTheme.grey300,
-          icon: allowMultipleAnswers ? Icons.check_box_outline_blank : null,
-          iconColor: allowMultipleAnswers ? AppTheme.grey400 : null,
+          icon: isMultiSelect ? Icons.check_box_outline_blank : null,
+          iconColor: isMultiSelect ? AppTheme.grey400 : null,
         );
       }
     }

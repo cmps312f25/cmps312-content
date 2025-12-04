@@ -1,23 +1,44 @@
 [
-  {
-    "story_id": 1,
-    "section_text": "In the heart of the Whispering Woods, a secret was kept.",
-    "image_url": "https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story1/1.1.png",
-    "audio_url": "https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story1/1.1.mp3"
-  },
-  {
-    "story_id": 1,
-    "section_text": "A young fox named Finn decided to uncover it."
-  },
-  {
-    "story_id": 2,
-    "section_text": "Leo and his robot friend Sparky blasted off into space.",
-    "image_url": "https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story2/2.1.png",
-    "audio_url": "https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story2/2.1.mp3"
-  },
-  {
-    "story_id": 2,
-    "section_text": "كان هناك نجم مفقود في سماء الليل.",
-    "image_url": "https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story2/2.2.png"
-  }
+    {
+        "story_id": 1,
+        "section_text": "In the bright African savannah, a playful lion cub named Simba is born, and all the animals gather happily as he is lifted high on a tall rock to welcome their future king.",
+        "image_url": "https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story1/section1.png",
+        "audio_url": "https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story1/section1.mp3"
+    },
+    {
+        "story_id": 1,
+        "section_text": "As Simba grows, his uncle Scar tricks him, and Simba runs away feeling sad and afraid, wandering alone through the dry grasslands until he meets new friends who cheer him up.",
+        "image_url": "https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story1/section2.png",
+        "audio_url": "https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story1/section2.mp3"
+    },
+    {
+        "story_id": 1,
+        "section_text": "When Simba is bigger and braver, he returns to his home, bravely faces Scar, and becomes king, with his lion family and all the animals celebrating on the rock under a bright sky.",
+        "image_url": "https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story1/section3.png",
+        "audio_url": "https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story1/section3.mp3"
+    },
+    {
+        "story_id": 1,
+        "section_text": "Later, Simba and his friend Nala have their own cub, and once again a tiny lion is proudly lifted on the rock, showing that the circle of life in the Pride Lands continues.",
+        "image_url": "https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story1/section4.png",
+        "audio_url": "https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story1/section4.mp3"
+    },
+    {
+        "story_id": 2,
+        "section_text": "Un matin, Leïla cherche son chat Mimi. Elle regarde sous le lit : pas de Mimi !",
+        "image_url": "https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story2/section1.png",
+        "audio_url": "https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story2/section1.mp3"
+    },
+    {
+        "story_id": 2,
+        "section_text": "Elle ouvre le placard : pas de Mimi !",
+        "image_url": "https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story2/section2.png",
+        "audio_url": "https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story2/section2.mp3"
+    },
+    {
+        "story_id": 2,
+        "section_text": "Soudain, elle entend « miaou » dans la cuisine. Mimi est assis sur la table... il a volé un morceau de fromage ! Leïla rit et dit : Coquin de chat, tu adores le fromage !",
+        "image_url": "https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story2/section3.png",
+        "audio_url": "https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story2/section3.mp3"
+    }
 ]

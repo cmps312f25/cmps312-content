@@ -1,0 +1,62 @@
+[
+  {
+    "story_id": 1,
+    "questions": [
+      {
+        "text": "Who is the main character in The Lion King?",
+        "is_multi_select": false,
+        "options": [
+          { "text": "Simba", "is_correct": true },
+          { "text": "Mufasa", "is_correct": false },
+          { "text": "Scar", "is_correct": false },
+          { "text": "Nala", "is_correct": false }
+        ]
+      },
+      {
+        "text": "Who are Simba's friends?",
+        "is_multi_select": true,
+        "options": [
+          { "text": "Timon", "is_correct": true },
+          { "text": "Pumbaa", "is_correct": true },
+          { "text": "Scar", "is_correct": false },
+          { "text": "Zazu", "is_correct": false }
+        ]
+      },
+      {
+        "text": "What does Simba learn in the story?",
+        "is_multi_select": false,
+        "options": [
+          { "text": "To be brave and take responsibility", "is_correct": true },
+          { "text": "To run away from problems", "is_correct": false },
+          { "text": "To live alone forever", "is_correct": false },
+          { "text": "To be scared of everything", "is_correct": false }
+        ]
+      }
+    ]
+  },
+  {
+    "story_id": 2,
+    "questions": [
+      {
+        "text": "What was hidden in the Whispering Woods?",
+        "is_multi_select": false,
+        "options": [
+          { "text": "A treasure chest", "is_correct": false },
+          { "text": "A secret", "is_correct": true },
+          { "text": "A cave", "is_correct": false },
+          { "text": "A river", "is_correct": false }
+        ]
+      },
+      {
+        "text": "Who decided to uncover the secret?",
+        "is_multi_select": false,
+        "options": [
+          { "text": "A young fox named Finn", "is_correct": true },
+          { "text": "A rabbit", "is_correct": false },
+          { "text": "A bear", "is_correct": false },
+          { "text": "A bird", "is_correct": false }
+        ]
+      }
+    ]
+  }
+]

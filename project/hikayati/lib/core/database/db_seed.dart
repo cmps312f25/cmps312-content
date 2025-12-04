@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:hikayati/core/database/db_schema.dart';
-import 'package:hikayati/core/database/quiz_example.dart';
 import 'package:sqflite/sqflite.dart';
 
 /// Database seeding for initial data
@@ -18,6 +17,7 @@ class DatabaseSeed {
     await _seedUsers(batch);
     await _seedStories(batch);
     await _seedStorySections(batch);
+    await _seedQuizzes(db);
 
     await batch.commit(noResult: true);
   }
@@ -57,11 +57,6 @@ class DatabaseSeed {
       final storyData = Map<String, dynamic>.from(story);
       storyData['created_at'] = now;
 
-      // Handle quiz example placeholder
-      if (storyData['quiz'] == 'quizExample') {
-        storyData['quiz'] = quizExample;
-      }
-
       batch.insert(DatabaseSchema.tableStories, storyData);
     }
   }
@@ -76,6 +71,48 @@ class DatabaseSeed {
       final sectionData = Map<String, dynamic>.from(section);
       sectionData['created_at'] = now;
       batch.insert(DatabaseSchema.tableSections, sectionData);
+    }
+  }
+
+  /// Seeds quizzes from JSON file
+  static Future<void> _seedQuizzes(Database db) async {
+    final jsonString = await rootBundle.loadString('assets/data/quizzes.json');
+    final List<dynamic> quizzes = json.decode(jsonString);
+    final now = DateTime.now().toIso8601String();
+
+    for (final quiz in quizzes) {
+      final quizData = Map<String, dynamic>.from(quiz);
+      quizData['created_at'] = now;
+
+      // Insert quiz and get its ID
+      final quizId = await db.insert(DatabaseSchema.tableQuizzes, {
+        'story_id': quizData['story_id'],
+        'created_at': now,
+      });
+
+      // Insert questions
+      final questions = quizData['questions'] as List<dynamic>;
+      for (final question in questions) {
+        final questionData = Map<String, dynamic>.from(question);
+
+        // Insert question and get its ID
+        final questionId = await db.insert(DatabaseSchema.tableQuestions, {
+          'quiz_id': quizId,
+          'text': questionData['text'],
+          'is_multi_select': questionData['is_multi_select'] == true ? 1 : 0,
+        });
+
+        // Insert options
+        final options = questionData['options'] as List<dynamic>;
+        for (final option in options) {
+          final optionData = Map<String, dynamic>.from(option);
+          await db.insert(DatabaseSchema.tableOptions, {
+            'question_id': questionId,
+            'text': optionData['text'],
+            'is_correct': optionData['is_correct'] == true ? 1 : 0,
+          });
+        }
+      }
     }
   }
 }

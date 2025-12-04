@@ -44,7 +44,7 @@ class LanguageSelector extends ConsumerWidget {
           backgroundColor: theme.brightness == Brightness.light
               ? AppTheme.grey100
               : AppTheme.grey800,
-          selectedColor: theme.colorScheme.primary.withOpacity(0.2),
+          selectedColor: theme.colorScheme.primary.withValues(alpha: 0.2),
           checkmarkColor: theme.colorScheme.primary,
           labelStyle: theme.textTheme.labelMedium?.copyWith(
             color: theme.colorScheme.onSurface,

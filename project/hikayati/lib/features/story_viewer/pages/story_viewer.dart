@@ -161,7 +161,7 @@ class _StoryViewerState extends ConsumerState<StoryViewer> {
                           Padding(
                             padding: const EdgeInsets.all(24.0),
                             child: Text(
-                              section.sectionText ?? 'Once upon a time...',
+                              section.sectionText,
                               style: theme.textTheme.bodyLarge?.copyWith(
                                 fontSize: 18,
                                 height: 1.6,
@@ -208,7 +208,7 @@ class _StoryViewerState extends ConsumerState<StoryViewer> {
                   color: theme.colorScheme.surface,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 8,
                       offset: const Offset(0, -2),
                     ),

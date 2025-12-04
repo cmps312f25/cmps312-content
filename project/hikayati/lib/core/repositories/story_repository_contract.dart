@@ -1,4 +1,3 @@
-import 'package:hikayati/core/entities/quiz.dart';
 import 'package:hikayati/core/entities/story.dart';
 import 'package:hikayati/core/entities/section.dart';
 import 'package:hikayati/core/entities/category.dart';
@@ -24,7 +23,6 @@ abstract class StoryRepositoryContract {
     String? readingLevel,
     int? categoryId,
     String? coverImageUrl,
-    Quiz? quiz,
   });
 
   /// Delete a story and all its sections
@@ -77,11 +75,6 @@ abstract class StoryRepositoryContract {
 
   /// Get all sections for a story in order
   Future<List<Section>> getSections(int storyId);
-
-  // ===== Quiz Management =====
-
-  /// Get quiz for a story
-  Future<Quiz?> getQuiz(int storyId);
 
   // ===== Category Management =====
 
