@@ -64,10 +64,9 @@ class AppTheme {
 
   // ==================== Typography ====================
 
-  /// Font family - using Poppins for a friendly, rounded look
-  static const String fontFamily = 'Poppins';
-  static const String displayFontFamily =
-      'Fredoka'; // For headings and playful text
+  /// Font family - using default system fonts
+  static const String? fontFamily = null;
+  static const String? displayFontFamily = null;
 
   /// Text Theme for Light Mode
   static TextTheme get lightTextTheme => TextTheme(
