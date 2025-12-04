@@ -18,6 +18,7 @@ class SectionEditor extends ConsumerStatefulWidget {
 class _SectionEditorState extends ConsumerState<SectionEditor> {
   final _textController = TextEditingController();
   final _imageUrlController = TextEditingController();
+  final _audioUrlController = TextEditingController();
   bool _isSaving = false;
 
   bool get _isEditMode => widget.sectionId != null;
@@ -38,15 +39,19 @@ class _SectionEditorState extends ConsumerState<SectionEditor> {
   void dispose() {
     _textController.dispose();
     _imageUrlController.dispose();
+    _audioUrlController.dispose();
     super.dispose();
   }
 
-  void _updateControllers(String? text, String? imageUrl) {
+  void _updateControllers(String? text, String? imageUrl, String? audioUrl) {
     if (_textController.text != (text ?? '')) {
       _textController.text = text ?? '';
     }
     if (_imageUrlController.text != (imageUrl ?? '')) {
       _imageUrlController.text = imageUrl ?? '';
+    }
+    if (_audioUrlController.text != (audioUrl ?? '')) {
+      _audioUrlController.text = audioUrl ?? '';
     }
   }
 
@@ -75,6 +80,9 @@ class _SectionEditorState extends ConsumerState<SectionEditor> {
               imageUrl: _imageUrlController.text.isEmpty
                   ? null
                   : _imageUrlController.text,
+              audioUrl: _audioUrlController.text.isEmpty
+                  ? null
+                  : _audioUrlController.text,
             );
       } else {
         await ref
@@ -85,6 +93,9 @@ class _SectionEditorState extends ConsumerState<SectionEditor> {
               imageUrl: _imageUrlController.text.isEmpty
                   ? null
                   : _imageUrlController.text,
+              audioUrl: _audioUrlController.text.isEmpty
+                  ? null
+                  : _audioUrlController.text,
             );
       }
 
@@ -107,7 +118,7 @@ class _SectionEditorState extends ConsumerState<SectionEditor> {
 
     ref.listen(sectionNotifierProvider, (_, next) {
       if (next case AsyncData(:final value) when value != null) {
-        _updateControllers(value.sectionText, value.imageUrl);
+        _updateControllers(value.sectionText, value.imageUrl, value.audioUrl);
       }
     });
 
@@ -155,14 +166,13 @@ class _SectionEditorState extends ConsumerState<SectionEditor> {
             controller: _textController,
             decoration: const InputDecoration(
               labelText: 'Section Text',
-              hintText: 'Once upon a time...',
               alignLabelWithHint: true,
             ),
             maxLines: null,
             minLines: 3,
             textAlignVertical: TextAlignVertical.top,
           ),
-          ResponsiveGap.md(),
+          ResponsiveGap.sm(),
           Text(
             'Image URL (Optional)',
             style: Theme.of(context).textTheme.titleMedium,
@@ -173,6 +183,19 @@ class _SectionEditorState extends ConsumerState<SectionEditor> {
             decoration: const InputDecoration(
               hintText: 'Enter image URL',
               prefixIcon: Icon(Icons.image),
+            ),
+          ),
+          ResponsiveGap.sm(),
+          Text(
+            'Audio URL (Optional)',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          ResponsiveGap.sm(),
+          TextField(
+            controller: _audioUrlController,
+            decoration: const InputDecoration(
+              hintText: 'Enter audio URL',
+              prefixIcon: Icon(Icons.audiotrack),
             ),
           ),
         ],

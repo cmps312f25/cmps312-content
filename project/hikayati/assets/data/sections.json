@@ -1,0 +1,23 @@
+[
+  {
+    "story_id": 1,
+    "section_text": "In the heart of the Whispering Woods, a secret was kept.",
+    "image_url": "https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story1/1.1.png",
+    "audio_url": "https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story1/1.1.mp3"
+  },
+  {
+    "story_id": 1,
+    "section_text": "A young fox named Finn decided to uncover it."
+  },
+  {
+    "story_id": 2,
+    "section_text": "Leo and his robot friend Sparky blasted off into space.",
+    "image_url": "https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story2/2.1.png",
+    "audio_url": "https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story2/2.1.mp3"
+  },
+  {
+    "story_id": 2,
+    "section_text": "كان هناك نجم مفقود في سماء الليل.",
+    "image_url": "https://raw.githubusercontent.com/cmps312f25/cmps312-content/refs/heads/main/project/hikayati-media/story2/2.2.png"
+  }
+]

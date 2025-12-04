@@ -22,12 +22,14 @@ class SectionNotifier extends AsyncNotifier<Section?> {
     required int storyId,
     String? imageUrl,
     String? sectionText,
+    String? audioUrl,
   }) async {
     final repository = ref.read(storyRepositoryProvider);
     final newSection = await repository.addSection(
       storyId: storyId,
       imageUrl: imageUrl,
       sectionText: sectionText,
+      audioUrl: audioUrl,
     );
     return newSection;
   }
@@ -36,6 +38,7 @@ class SectionNotifier extends AsyncNotifier<Section?> {
     required int sectionId,
     String? imageUrl,
     String? sectionText,
+    String? audioUrl,
   }) async {
     state = const AsyncValue.loading();
 
@@ -45,6 +48,7 @@ class SectionNotifier extends AsyncNotifier<Section?> {
         sectionId: sectionId,
         imageUrl: imageUrl,
         sectionText: sectionText,
+        audioUrl: audioUrl,
       );
     });
   }

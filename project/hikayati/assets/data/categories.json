@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "name": "Adventure",
+    "icon": "explore"
+  },
+  {
+    "id": 2,
+    "name": "Fantasy",
+    "icon": "auto_awesome"
+  },
+  {
+    "id": 3,
+    "name": "Science",
+    "icon": "science"
+  },
+  {
+    "id": 4,
+    "name": "Friendship",
+    "icon": "favorite"
+  },
+  {
+    "id": 5,
+    "name": "Animal",
+    "icon": "pets"
+  },
+  {
+    "id": 6,
+    "name": "Mystery",
+    "icon": "search"
+  },
+  {
+    "id": 7,
+    "name": "History",
+    "icon": "history_edu"
+  },
+  {
+    "id": 8,
+    "name": "Nature",
+    "icon": "park"
+  }
+]

@@ -16,7 +16,7 @@ Future<void> main() async {
   }
 
   // Temporarily add this line to reset and re-seed the database
-  await DatabaseHelper.instance.deleteDB();
+  await DatabaseHelper.instance.deleteDatabase();
 
   runApp(const ProviderScope(child: App()));
 }

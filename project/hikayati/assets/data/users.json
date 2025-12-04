@@ -1,0 +1,23 @@
+[
+  {
+    "first_name": "Ahmed",
+    "last_name": "Ali",
+    "email": "author1@hikayati.com",
+    "password": "pass123",
+    "role": "Author"
+  },
+  {
+    "first_name": "Fatima",
+    "last_name": "Hassan",
+    "email": "author2@hikayati.com",
+    "password": "pass123",
+    "role": "Author"
+  },
+  {
+    "first_name": "Mohammed",
+    "last_name": "Ahmed",
+    "email": "author3@hikayati.com",
+    "password": "pass123",
+    "role": "Author"
+  }
+]
