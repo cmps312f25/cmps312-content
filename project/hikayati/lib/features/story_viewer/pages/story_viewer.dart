@@ -141,21 +141,34 @@ class _StoryViewerState extends ConsumerState<StoryViewer> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          // Image section - constrained height
+                          // Image section - responsive height
                           if (section.imageUrl != null)
-                            AspectRatio(
-                              aspectRatio: 5 / 1,
-                              child: Image.network(
-                                section.imageUrl!,
-                                fit: BoxFit.contain,
-                                errorBuilder: (_, __, ___) => Container(
-                                  color:
-                                      theme.colorScheme.surfaceContainerHighest,
-                                  child: const Center(
-                                    child: Icon(Icons.broken_image, size: 64),
+                            LayoutBuilder(
+                              builder: (context, constraints) {
+                                // Use different aspect ratios based on screen width
+                                final isMobile =
+                                    MediaQuery.of(context).size.width < 600;
+                                final aspectRatio = isMobile ? 4 / 3 : 5 / 1;
+
+                                return AspectRatio(
+                                  aspectRatio: aspectRatio,
+                                  child: Image.network(
+                                    section.imageUrl!,
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (_, __, ___) => Container(
+                                      color: theme
+                                          .colorScheme
+                                          .surfaceContainerHighest,
+                                      child: const Center(
+                                        child: Icon(
+                                          Icons.broken_image,
+                                          size: 64,
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
+                                );
+                              },
                             ),
                           // Text section
                           Padding(
