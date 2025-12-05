@@ -30,6 +30,8 @@ class _StoryViewerState extends ConsumerState<StoryViewer> {
         setState(() {
           _currentPage = newPage;
         });
+        // Auto-play audio for the new page after a short delay
+        _autoPlayCurrentSection();
       }
     });
 
@@ -55,6 +57,24 @@ class _StoryViewerState extends ConsumerState<StoryViewer> {
     // Invalidate the sections provider to fetch fresh data
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.invalidate(storySectionsProvider(widget.storyId));
+      // Auto-play audio for the first section after data is loaded
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted) {
+          _autoPlayCurrentSection();
+        }
+      });
+    });
+  }
+
+  void _autoPlayCurrentSection() {
+    final sectionsAsync = ref.read(storySectionsProvider(widget.storyId));
+    sectionsAsync.whenData((sections) {
+      if (_currentPage < sections.length) {
+        final currentSection = sections[_currentPage];
+        if (currentSection.audioUrl != null) {
+          _playAudio(currentSection.audioUrl!);
+        }
+      }
     });
   }
 
