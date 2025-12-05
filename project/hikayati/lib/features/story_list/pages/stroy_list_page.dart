@@ -132,24 +132,35 @@ class _StoryListPageState extends ConsumerState<StoryListPage> {
                 title: 'No Stories Found',
                 message: 'No stories matching your criteria.',
               )
-            : GridView.builder(
-                padding: const EdgeInsets.all(12),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 1.2,
-                  crossAxisSpacing: 8,
-                  mainAxisSpacing: 8,
-                ),
-                itemCount: stories.length,
-                itemBuilder: (context, index) {
-                  final story = stories[index];
-                  return StoryCard(
-                    story: story,
-                    onTap: () => context.push('/story/${story.id}'),
-                    onQuizTap: () => context.push('/story/${story.id}/quiz'),
-                    onEdit: () => context.push('/story-editor/${story.id}'),
-                    onDelete: () => _showDeleteConfirmation(context, story),
-                    onEditQuiz: () => context.push('/quiz-editor/${story.id}'),
+            : LayoutBuilder(
+                builder: (context, constraints) {
+                  // Determine layout based on screen width
+                  final isMobile = constraints.maxWidth < 600;
+                  final isTablet = constraints.maxWidth >= 600 && constraints.maxWidth < 900;
+                  
+                  final crossAxisCount = isMobile ? 1 : (isTablet ? 2 : 3);
+                  final childAspectRatio = isMobile ? 1.4 : 1.2;
+                  
+                  return GridView.builder(
+                    padding: EdgeInsets.all(isMobile ? 16 : 12),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      childAspectRatio: childAspectRatio,
+                      crossAxisSpacing: isMobile ? 0 : 8,
+                      mainAxisSpacing: isMobile ? 16 : 8,
+                    ),
+                    itemCount: stories.length,
+                    itemBuilder: (context, index) {
+                      final story = stories[index];
+                      return StoryCard(
+                        story: story,
+                        onTap: () => context.push('/story/${story.id}'),
+                        onQuizTap: () => context.push('/story/${story.id}/quiz'),
+                        onEdit: () => context.push('/story-editor/${story.id}'),
+                        onDelete: () => _showDeleteConfirmation(context, story),
+                        onEditQuiz: () => context.push('/quiz-editor/${story.id}'),
+                      );
+                    },
                   );
                 },
               ),
